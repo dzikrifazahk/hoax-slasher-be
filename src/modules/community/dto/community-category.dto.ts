@@ -24,4 +24,3 @@ export class CreateCommunityCategoryDtoIn {
   alias_code: number;
 }
 
-export class UpdateCommunityDto {}

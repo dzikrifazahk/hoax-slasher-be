@@ -1,5 +1,6 @@
 import { CommonColumn } from 'src/common/column/common-column';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CommunityEntity } from './community.entity';
 
 @Entity({ name: 'community_category' })
 export class CommunityCategoryEntity extends CommonColumn {
@@ -24,4 +25,10 @@ export class CommunityCategoryEntity extends CommonColumn {
     type: 'integer',
   })
   aliasCode: number;
+
+  @OneToMany(() => CommunityEntity, (community) => community.communityCategory, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  community: CommunityEntity[];
 }

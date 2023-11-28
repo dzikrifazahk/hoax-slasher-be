@@ -1,70 +1,139 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCommunityDtoIn } from '../dto/community.dto';
-import { UpdateCommunityDto } from '../dto/community-category.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateCommunityDtoIn, UpdateCommunityDto } from '../dto/community.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from '../entities/community.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
+import { CommunityStatus } from 'src/common/enum/enum';
 
 @Injectable()
 export class CommunityService {
   constructor(
     @InjectRepository(CommunityEntity)
-    private readonly userRepository:  Repository<CommunityEntity>,
+    private readonly communityRepository: Repository<CommunityEntity>,
   ) {}
 
   async create(dto: CreateCommunityDtoIn) {
     const MINIMUM_NAME_LENGTH = 1;
-    const MINIMUM_PASSWORD_LENGTH = 3;
+    const MINIMUM_DESCRIPTION_LENGTH = 3;
+
+    const findCommunity = await this.communityRepository.findOne({
+      where: {
+        communityName: ILike(`%${dto.community_name.toLowerCase()}%`),
+      },
+    });
+
+    if (dto.community_name.length < MINIMUM_NAME_LENGTH) {
+      throw new BadRequestException(
+        `community name should be at least ${MINIMUM_NAME_LENGTH} character long`,
+      );
+    }
+
+    if (dto.community_description.length < MINIMUM_DESCRIPTION_LENGTH) {
+      throw new BadRequestException(
+        `community description should be at least ${MINIMUM_DESCRIPTION_LENGTH} character long`,
+      );
+    }
+
+    if (findCommunity) {
+      throw new BadRequestException('community already registered');
+    }
+
+    const newCommunity = this.communityRepository.create({
+      communityName: dto.community_name,
+      communityDescription: dto.community_description,
+      communityAddress: dto.community_address,
+      community_category_id: dto.community_category_id,
+    });
+
+    await this.communityRepository.save(newCommunity);
+
+    return { communityId: newCommunity.id };
+  }
+
+  async getAll() {
+    const communities = await this.communityRepository.find({
+      where: {
+        communityStatus: CommunityStatus.ACTIVE,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return communities;
+  }
+
+  async findOne(id: string) {
+    const findCommunity = await this.communityRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!findCommunity) {
+      throw new BadRequestException('community not found');
+    }
+
+    return findCommunity;
+  }
+
+  async update(id: string, dto: UpdateCommunityDto) {
+    const find = await this.communityRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
     
-    // dto.email = dto.email.trim();
+    if (!find) {
+      throw new BadRequestException('community not found');
+    }
+    
+    const findCommunity = await this.communityRepository.findOne({
+      where: {
+        id: find.id,
+      },
+    });
+    
+    if(dto.community_name) {
+      findCommunity.communityName = dto.community_name;
+    }
 
-    // if (dto.name.length < MINIMUM_NAME_LENGTH) {
-    //   throw new BadRequestException(
-    //     `username should be at least ${MINIMUM_NAME_LENGTH} character long`,
-    //   );
-    // }
+    if(dto.community_description) {
+      findCommunity.communityDescription = dto.community_description;
+    }
 
-    // if (dto.password.length < MINIMUM_PASSWORD_LENGTH) {
-    //   throw new BadRequestException(
-    //     `password should be at least ${MINIMUM_PASSWORD_LENGTH} character long`,
-    //   );
-    // }
+    if(dto.community_address) {
+      findCommunity.communityAddress = dto.community_address;
+    }
 
-    // const foundEmail = await this.userRepository.findOneBy({
-    //   email: dto.email,
-    // });
+    if(dto.community_status) {
+      findCommunity.communityStatus = dto.community_status;
+    }
 
-    // if (foundEmail != null) {
-    //   throw new BadRequestException('email already registered');
-    // }
+    if(dto.community_category_id) {
+      findCommunity.community_category_id = dto.community_category_id;
+    }
 
-    // const encryptedPassword = await this.password.hash(dto.password);
+    findCommunity.updatedAt = new Date();
 
-    // const newUser = this.userRepository.create({
-    //   name: dto.name,
-    //   email: dto.email,
-    //   password: encryptedPassword,
-    //   level: dto.level,
-    // });
+    await this.communityRepository.save(findCommunity);
 
-    // await this.userRepository.save(newUser);
-
-    // return { userId: newUser.id_user };
+    return findCommunity;
   }
 
-  findAll() {
-    return `This action returns all community`;
-  }
+  async remove(id: string) {
+    const findCommunity = await this.communityRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} community`;
-  }
+    if (!findCommunity) {
+      throw new BadRequestException('community not found');
+    }
 
-  update(id: number, updateCommunityDto: UpdateCommunityDto) {
-    return `This action updates a #${id} community`;
-  }
+    await this.communityRepository.delete(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} community`;
+    return findCommunity;
   }
 }
