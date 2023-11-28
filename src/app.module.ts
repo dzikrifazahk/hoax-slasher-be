@@ -9,6 +9,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CommunityModule } from './modules/community/community.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { AuthModule } from './modules/auth/auth.module';
       autoLoadEntities: true,
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    CommunityModule
   ],
   controllers: [AppController],
   providers: [AppService],

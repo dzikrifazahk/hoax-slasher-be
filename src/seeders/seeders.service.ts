@@ -31,7 +31,7 @@ export class SeedersService {
 
     if (foundUser) {
       console.log('user admin already created');
-      return { userId: foundUser.id_user };
+      return { userId: foundUser.id };
     }
 
     const userObj : CreateUserDtoIn = {

@@ -91,7 +91,7 @@ export class UsersService {
 
     await this.userRepository.save(newUser);
 
-    return { userId: newUser.id_user };
+    return { userId: newUser.id };
   }
 
   async findOne(email: string): Promise<UserEntity | undefined> {
@@ -119,7 +119,7 @@ export class UsersService {
 
     const find = await this.userRepository.findOne({
       where: {
-        id_user: id,
+        id: id,
       },
     });
 
@@ -128,7 +128,7 @@ export class UsersService {
     }
 
     const findUser = await this.userRepository.findOneBy({
-      id_user: find.id_user,
+      id: find.id,
     });
 
     if (dto.name) {
@@ -206,7 +206,7 @@ export class UsersService {
 
   async deleteUser(id: string) {
     const findUser = await this.userRepository.findOneBy({
-      id_user: id,
+      id: id,
     });
 
     if (!findUser) {
@@ -221,7 +221,7 @@ export class UsersService {
   async findOneById(id: string) {
     return this.userRepository.findOne({
       where: {
-        id_user: id,
+        id: id,
       },
     });
   }
