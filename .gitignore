@@ -1,7 +1,9 @@
 # compiled output
 /dist
 /node_modules
-
+.env
+pgdata
+src/public/*
 # Logs
 logs
 *.log
