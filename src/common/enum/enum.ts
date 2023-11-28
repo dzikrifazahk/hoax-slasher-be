@@ -4,3 +4,8 @@ export enum UserRole {
     COMMUNITY_ADMIN = 'COMMUNITY_ADMIN',
     USER_GENERAL = 'USER_GENERAL'
 }
+
+export enum CommunityStatus {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE'
+}
