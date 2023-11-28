@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateCommunityDto } from './community.dto';
+
 
 export class CreateCommunityCategoryDtoIn {
   @ApiProperty({

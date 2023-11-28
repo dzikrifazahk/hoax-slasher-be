@@ -7,11 +7,8 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CommunityService } from '../services/community.service';
-import { CreateCommunityDto } from '../dto/community.dto';
 import {
   CreateCommunityCategoryDtoIn,
-  UpdateCommunityDto,
 } from '../dto/community-category.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/dtos/base.dto';
