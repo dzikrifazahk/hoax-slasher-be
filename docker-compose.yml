@@ -19,3 +19,29 @@ services:
       - db
     ports:
       - 8080:8080
+  
+  # PRODUCTION
+  # nest_be:
+  #   build: ./be_antrian
+  #   ports:
+  #     - '4000:4000'
+  #   command: node dist/src/main.js
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #   env_file:
+  #     - ./be_antrian/.env
+
+  # web-server:
+  #   container_name: webserver
+  #   image: nginx:stable
+  #   restart: unless-stopped
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - ./be_antrian/config:/etc/nginx/conf.d
+  #     - /etc/letsencrypt:/etc/letsencrypt:ro
+  #     - /tmp/acme_challenge:/tmp/acme_challenge
+    
+    #END PRODUCTION
