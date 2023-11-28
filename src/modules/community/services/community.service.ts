@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCommunityDto } from '../dto/community.dto';
+import { CreateCommunityDtoIn } from '../dto/community.dto';
 import { UpdateCommunityDto } from '../dto/community-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from '../entities/community.entity';
@@ -12,7 +12,7 @@ export class CommunityService {
     private readonly userRepository:  Repository<CommunityEntity>,
   ) {}
 
-  async create(dto: CreateCommunityDto) {
+  async create(dto: CreateCommunityDtoIn) {
     const MINIMUM_NAME_LENGTH = 1;
     const MINIMUM_PASSWORD_LENGTH = 3;
     
