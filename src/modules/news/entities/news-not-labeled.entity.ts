@@ -37,7 +37,7 @@ export class NewsNotLabeledEntity extends CommonColumn {
 
   @Column({
     name: 'label',
-    type: 'number',
+    type: 'integer',
   })
   label: number;
 

@@ -10,6 +10,7 @@ import { join } from 'path';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommunityModule } from './modules/community/community.module';
+import { NewsModule } from './modules/news/news.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CommunityModule } from './modules/community/community.module';
     }),
     UsersModule,
     AuthModule,
+    NewsModule,
     CommunityModule
   ],
   controllers: [AppController],
