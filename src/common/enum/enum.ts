@@ -9,3 +9,8 @@ export enum CommunityStatus {
     ACTIVE = 'ACTIVE',
     INACTIVE = 'INACTIVE'
 }
+
+export enum NewsLabel {
+    HOAX = 'HOAX',
+    AKTUAL = 'AKTUAL',
+}
