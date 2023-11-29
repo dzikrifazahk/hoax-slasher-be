@@ -1,7 +1,7 @@
 
 
 # Backend For Hoax Slasher App
-<div align="center"> <img src="https://raw.githubusercontent.com/dzikrifazahk/hoax-slasher-be/main/config/design%20system.png"> </div>
+<div align="center"> <img src="https://raw.githubusercontent.com/dzikrifazahk/hoax-slasher-be/main/config/designSystem.png"> </div>
 
 PLEASE READ FIRST.
 Hoax Slasher is an application that can eradicate fake news, which is currently focused on eradicating fake news about elections. 
