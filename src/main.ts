@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BaseDto } from './common/dtos/base.dto';
 import { BasePaginationDto } from './common/dtos/pagination.dto';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const port = process.env.PORT;
@@ -25,5 +26,6 @@ async function bootstrap() {
     },
   });
   await app.listen(port);
+  Logger.log(`Server running on http://localhost:${port}`, 'NestApplication');
 }
 bootstrap();
