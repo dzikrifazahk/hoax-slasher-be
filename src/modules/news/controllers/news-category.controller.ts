@@ -11,7 +11,7 @@ export class NewsCategoryController {
 
   @Post('/')
   @ApiOperation({
-    summary: 'Create Or Update news category',
+    summary: '** Create Or Update ** news category',
     description:
       'Create Or Update news category, if update this validate the alias code',
   })
