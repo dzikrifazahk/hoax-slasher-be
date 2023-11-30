@@ -23,7 +23,7 @@ export class CommunityCategoryController {
 
   @Post('/')
   @ApiOperation({
-    summary: 'Create Or Update new community category',
+    summary: '** Create Or Update ** new community category',
     description:
       'Create Or Update new community category, if update this validate the alias code',
   })

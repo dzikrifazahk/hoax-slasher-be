@@ -1,5 +1,7 @@
 import { CommonColumn } from 'src/common/column/common-column';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { NewsLabel } from 'src/common/enum/enum';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { NewsCategoryEntity } from './news-category.entity';
 
 @Entity('news_not_labeled')
 export class NewsNotLabeledEntity extends CommonColumn {
@@ -11,6 +13,7 @@ export class NewsNotLabeledEntity extends CommonColumn {
     type: 'varchar',
   })
   newsTitle: string;
+
   @Column({
     name: 'news_description',
     type: 'varchar',
@@ -37,14 +40,32 @@ export class NewsNotLabeledEntity extends CommonColumn {
 
   @Column({
     name: 'label',
-    type: 'integer',
+    type: 'varchar',
+    default: NewsLabel.NOT_TRAINED,
   })
-  label: number;
+  label: NewsLabel;
 
   @Column({
     name: 'is_training',
     type: 'boolean',
+    default: false,
   })
   isTraining: boolean;
+
+  @Column({
+    name: 'news_category_id',
+    type: 'varchar',
+  })
+  newsCategoryId: string;
+
+  @ManyToOne(() => NewsCategoryEntity, {
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'news_category_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'fk_news_category_id',
+  })
+  newsCategory: NewsCategoryEntity;
 
 }
