@@ -3,15 +3,16 @@ import { NewsNotLabeledEntity } from '../entities/news.entity';
 import { Repository } from 'typeorm';
 import { CreateNewsDtoIn } from '../dto/news.dto';
 import { NewsLabel } from 'src/common/enum/enum';
+const { Op } = require('sequelize');
 
 export class NewsService {
   constructor(
     @InjectRepository(NewsNotLabeledEntity)
-    private readonly newsNotLabeledRepository: Repository<NewsNotLabeledEntity>,
+    private readonly news: Repository<NewsNotLabeledEntity>,
   ) {}
 
   async create(dto: CreateNewsDtoIn) {
-    const newsNotLabeledCreate = this.newsNotLabeledRepository.create({
+    const newsNotLabeledCreate = this.news.create({
       newsTitle: dto.news_title,
       newsDescription: dto.news_description,
       newsAuthor: dto.news_author,
@@ -20,13 +21,13 @@ export class NewsService {
       newsCategoryId: dto.news_category_id,
     });
 
-    await this.newsNotLabeledRepository.save(newsNotLabeledCreate);
+    await this.news.save(newsNotLabeledCreate);
 
     return { news: newsNotLabeledCreate.id };
   }
 
   async update(id: string, dto: CreateNewsDtoIn) {
-    const find = await this.newsNotLabeledRepository.findOne({
+    const find = await this.news.findOne({
       where: {
         id: id,
       },
@@ -55,13 +56,13 @@ export class NewsService {
     find.label = NewsLabel.NOT_TRAINED;
     find.isTraining = false;
 
-    await this.newsNotLabeledRepository.save(find);
+    await this.news.save(find);
 
     return find;
   }
 
   async findAll() {
-    const getAll = await this.newsNotLabeledRepository.find({
+    const getAll = await this.news.find({
         order: {
             createdAt: 'DESC',
         },
@@ -76,7 +77,7 @@ export class NewsService {
 
   async findOne(id: string) {
     const findNewsNotLabeled =
-      await this.newsNotLabeledRepository.findOne({
+      await this.news.findOne({
         where: {
           id: id,
         },
@@ -89,9 +90,27 @@ export class NewsService {
     return findNewsNotLabeled;
   }
 
+  async search(title: string, desc: string){
+    const getAll = await this.news.find({
+      [Op.or]: [
+        { newsTitle: { [Op.like]: `%${title}%` } },
+        { newsDescription: { [Op.like]: `%${desc}%` } },
+      ],
+        order: {
+            createdAt: 'DESC',
+        },
+    });
+    
+    if (!getAll) {
+        throw new Error('Error Get News Not Labeled');
+    }
+
+    return getAll;
+  }
+
   async delete(id: string) {
     const findNewsNotLabeled =
-      await this.newsNotLabeledRepository.findOne({
+      await this.news.findOne({
         where: {
           id: id,
         },
@@ -101,7 +120,7 @@ export class NewsService {
         throw new Error('Error Get News Not Labeled');
     }
 
-    await this.newsNotLabeledRepository.delete({
+    await this.news.delete({
       id: id,
     });
 
