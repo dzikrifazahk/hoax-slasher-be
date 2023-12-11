@@ -1,32 +1,77 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { NewsService } from '../services/news.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateNewsDtoIn } from '../dto/news.dto';
+import { BaseDto } from 'src/common/dtos/base.dto';
 
+@ApiTags('News')
 @Controller('news')
-export class NewsController {
-  constructor(private readonly newsService: NewsService) {}
+export class NewsNotLabeledController {
+  constructor(private readonly newsNotLabeledService: NewsService) {}
 
-  // @Post()
-  // create(@Body() createNewsDto: CreateNewsDto) {
-  //   return this.newsService.create(createNewsDto);
-  // }
+  @Post('/')
+  @ApiOperation({
+    summary: 'Create news not labeled',
+    description: 'Create news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async create(@Body() dto: CreateNewsDtoIn) {
+    const create = await this.newsNotLabeledService.create(dto);
+    return create;
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.newsService.findAll();
-  // }
+  @Get('/getAll')
+  @ApiOperation({
+    summary: 'Get all news not labeled',
+    description: 'Get all news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async findAll() {
+    const getAll = await this.newsNotLabeledService.findAll();
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.newsService.findOne(+id);
-  // }
+    return new BaseDto('Success Get All News Not Labeled', getAll);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateNewsDto: UpdateNewsDto) {
-  //   return this.newsService.update(+id, updateNewsDto);
-  // }
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get one news not labeled',
+    description: 'Get one news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async findOne(@Param('id') id: string) {
+    const getOne = await this.newsNotLabeledService.findOne(id);
+    return new BaseDto('Success Get One News Not Labeled', getOne);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.newsService.remove(+id);
-  // }
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Update one news not labeled',
+    description: 'Update one news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async update(@Param('id') id: string, @Body() dto: CreateNewsDtoIn) {
+    const update = await this.newsNotLabeledService.update(id,dto);
+    return new BaseDto('Success Update One News Not Labeled', update);
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete one news not labeled',
+    description: 'Delete one news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async delete(@Param('id') id: string) {
+    const deleteData = await this.newsNotLabeledService.delete(id);
+    return new BaseDto('Success Delete News Not Labeled', deleteData);
+  }
 }
