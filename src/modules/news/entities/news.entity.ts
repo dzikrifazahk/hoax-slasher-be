@@ -60,7 +60,7 @@ export class NewsNotLabeledEntity extends CommonColumn {
   isTraining: boolean;
 
   @Column({
-    name: 'is_training',
+    name: 'is_training_date',
     type: 'boolean',
     nullable: true
   })
