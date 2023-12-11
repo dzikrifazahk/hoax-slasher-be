@@ -1,6 +1,6 @@
 import { ApiOAuth2, ApiProperty } from '@nestjs/swagger';
 
-export class CreateNewsNotLabeledDtoIn {
+export class CreateNewsDtoIn {
   @ApiProperty({
     type: String,
     example: 'News Title',

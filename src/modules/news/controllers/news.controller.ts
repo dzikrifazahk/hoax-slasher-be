@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { NewsNotLabeledService } from '../services/news-not-labeled.service';
+import { NewsService } from '../services/news.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateNewsNotLabeledDtoIn } from '../dto/news-not-labeled.dto';
+import { CreateNewsDtoIn } from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 
-@ApiTags('News Not Labeled')
-@Controller('news-not-labeled')
+@ApiTags('News')
+@Controller('news')
 export class NewsNotLabeledController {
-  constructor(private readonly newsNotLabeledService: NewsNotLabeledService) {}
+  constructor(private readonly newsNotLabeledService: NewsService) {}
 
   @Post('/')
   @ApiOperation({
@@ -15,9 +15,9 @@ export class NewsNotLabeledController {
     description: 'Create news not labeled',
   })
   @ApiResponse({
-    type: CreateNewsNotLabeledDtoIn,
+    type: CreateNewsDtoIn,
   })
-  async create(@Body() dto: CreateNewsNotLabeledDtoIn) {
+  async create(@Body() dto: CreateNewsDtoIn) {
     const create = await this.newsNotLabeledService.create(dto);
     return create;
   }
@@ -28,7 +28,7 @@ export class NewsNotLabeledController {
     description: 'Get all news not labeled',
   })
   @ApiResponse({
-    type: CreateNewsNotLabeledDtoIn,
+    type: CreateNewsDtoIn,
   })
   async findAll() {
     const getAll = await this.newsNotLabeledService.findAll();
@@ -42,7 +42,7 @@ export class NewsNotLabeledController {
     description: 'Get one news not labeled',
   })
   @ApiResponse({
-    type: CreateNewsNotLabeledDtoIn,
+    type: CreateNewsDtoIn,
   })
   async findOne(@Param('id') id: string) {
     const getOne = await this.newsNotLabeledService.findOne(id);
@@ -55,9 +55,9 @@ export class NewsNotLabeledController {
     description: 'Update one news not labeled',
   })
   @ApiResponse({
-    type: CreateNewsNotLabeledDtoIn,
+    type: CreateNewsDtoIn,
   })
-  async update(@Param('id') id: string, @Body() dto: CreateNewsNotLabeledDtoIn) {
+  async update(@Param('id') id: string, @Body() dto: CreateNewsDtoIn) {
     const update = await this.newsNotLabeledService.update(id,dto);
     return new BaseDto('Success Update One News Not Labeled', update);
   }
@@ -68,7 +68,7 @@ export class NewsNotLabeledController {
     description: 'Delete one news not labeled',
   })
   @ApiResponse({
-    type: CreateNewsNotLabeledDtoIn,
+    type: CreateNewsDtoIn,
   })
   async delete(@Param('id') id: string) {
     const deleteData = await this.newsNotLabeledService.delete(id);

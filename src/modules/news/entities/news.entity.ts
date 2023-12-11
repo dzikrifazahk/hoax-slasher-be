@@ -46,11 +46,25 @@ export class NewsNotLabeledEntity extends CommonColumn {
   label: NewsLabel;
 
   @Column({
+    name: 'is_ambiguous',
+    type: 'boolean',
+    default: false,
+  })
+  isAmbiguous: boolean;
+
+  @Column({
     name: 'is_training',
     type: 'boolean',
     default: false,
   })
   isTraining: boolean;
+
+  @Column({
+    name: 'is_training',
+    type: 'boolean',
+    nullable: true
+  })
+  trainingDate: Date;
 
   @Column({
     name: 'news_category_id',

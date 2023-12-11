@@ -1,16 +1,16 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { NewsNotLabeledEntity } from '../entities/news-not-labeled.entity';
+import { NewsNotLabeledEntity } from '../entities/news.entity';
 import { Repository } from 'typeorm';
-import { CreateNewsNotLabeledDtoIn } from '../dto/news-not-labeled.dto';
+import { CreateNewsDtoIn } from '../dto/news.dto';
 import { NewsLabel } from 'src/common/enum/enum';
 
-export class NewsNotLabeledService {
+export class NewsService {
   constructor(
     @InjectRepository(NewsNotLabeledEntity)
     private readonly newsNotLabeledRepository: Repository<NewsNotLabeledEntity>,
   ) {}
 
-  async create(dto: CreateNewsNotLabeledDtoIn) {
+  async create(dto: CreateNewsDtoIn) {
     const newsNotLabeledCreate = this.newsNotLabeledRepository.create({
       newsTitle: dto.news_title,
       newsDescription: dto.news_description,
@@ -25,7 +25,7 @@ export class NewsNotLabeledService {
     return { news: newsNotLabeledCreate.id };
   }
 
-  async update(id: string, dto: CreateNewsNotLabeledDtoIn) {
+  async update(id: string, dto: CreateNewsDtoIn) {
     const find = await this.newsNotLabeledRepository.findOne({
       where: {
         id: id,

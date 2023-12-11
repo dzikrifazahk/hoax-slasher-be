@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommunityModule } from './modules/community/community.module';
 import { NewsModule } from './modules/news/news.module';
+import { TrustedSourceModule } from './modules/trusted_source/trusted_source.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NewsModule } from './modules/news/news.module';
     UsersModule,
     AuthModule,
     NewsModule,
+    TrustedSourceModule,
     CommunityModule
   ],
   controllers: [AppController],
