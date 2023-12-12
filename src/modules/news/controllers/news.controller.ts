@@ -1,8 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  UseInterceptors,
+} from '@nestjs/common';
 import { NewsService } from '../services/news.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateNewsDtoIn } from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('News')
 @Controller('news')
@@ -10,6 +25,7 @@ export class NewsNotLabeledController {
   constructor(private readonly newsService: NewsService) {}
 
   @Post('/')
+  @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Create news not labeled',
     description: 'Create news not labeled',
@@ -17,8 +33,19 @@ export class NewsNotLabeledController {
   @ApiResponse({
     type: CreateNewsDtoIn,
   })
-  async create(@Body() dto: CreateNewsDtoIn) {
-    const create = await this.newsService.create(dto);
+  async create(
+    @Body() dto: CreateNewsDtoIn,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 105242880 }), // 100MB
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|mp4|quicktime)$/ }),
+        ],
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    const create = await this.newsService.create(dto, file);
     return create;
   }
 
@@ -76,7 +103,7 @@ export class NewsNotLabeledController {
     type: CreateNewsDtoIn,
   })
   async update(@Param('id') id: string, @Body() dto: CreateNewsDtoIn) {
-    const update = await this.newsService.update(id,dto);
+    const update = await this.newsService.update(id, dto);
     return new BaseDto('Success Update One News Not Labeled', update);
   }
 
