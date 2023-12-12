@@ -3,8 +3,8 @@ import { NewsLabel } from 'src/common/enum/enum';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { NewsCategoryEntity } from './news-category.entity';
 
-@Entity('news_not_labeled')
-export class NewsNotLabeledEntity extends CommonColumn {
+@Entity('news')
+export class NewsEntity extends CommonColumn {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -65,6 +65,27 @@ export class NewsNotLabeledEntity extends CommonColumn {
     nullable: true
   })
   trainingDate: Date;
+
+  @Column({
+    name: 'file_name',
+    type: 'varchar',
+    nullable: true
+  })
+  fileName: string;
+
+  @Column({
+    name: 'file_path',
+    type: 'varchar',
+    nullable: true
+  })
+  filePath: string;
+
+  @Column({
+    name: 'counter_view',
+    type: 'integer',
+    default: 0,
+  })
+  counterView: number;
 
   @Column({
     name: 'news_category_id',

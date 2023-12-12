@@ -36,6 +36,20 @@ export class CreateNewsDtoIn {
     example: '3c143ad2-6d70-4053-a0ae-82311b7a9d6a',
   })
   news_category_id: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'file.jpg',
+    nullable: true
+  })
+  file_name?: Date;
+
+  @ApiProperty({
+    type: String,
+    example: 'user/src/sss',
+    nullable: true
+  })
+  file_path?: string;
 }
 
 export class UpdateNewsDtoIn {
