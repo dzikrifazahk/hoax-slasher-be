@@ -1,17 +1,20 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { NewsEntity } from '../entities/news.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateNewsDtoIn } from '../dto/news.dto';
 import { NewsLabel } from 'src/common/enum/enum';
 const { Op } = require('sequelize');
 const fs = require('fs-extra');
-const REF_DISPLAY_LOGO = 'news';
+const REF_IMAGE = 'news';
 import * as path from 'path';
+import { NewsCategoryEntity } from '../entities/news-category.entity';
 
 export class NewsService {
   constructor(
     @InjectRepository(NewsEntity)
     private readonly news: Repository<NewsEntity>,
+    @InjectRepository(NewsCategoryEntity)
+    private readonly newsCategoryRepo: Repository<NewsCategoryEntity>,
   ) {}
 
   async create(dto: CreateNewsDtoIn, file?: Express.Multer.File) {
@@ -33,7 +36,7 @@ export class NewsService {
       const correctedPath2 = correctedPath.replace(/\\/g, '/');
       //  console.log('Corrected Path2', correctedPath2);
       //  const filePath = path.join(correctedPath2, REF_ATTACHMENT, fileName);
-      const filePath = correctedPath2 + '/' + REF_DISPLAY_LOGO + '/' + fileName;
+      const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
       // console.log('File Path : ', filePath);
 
       await fs.ensureDir(path.dirname(filePath));
@@ -48,8 +51,9 @@ export class NewsService {
         newsSource: dto.news_source,
         newsPublishDate: dto.news_publish_date,
         newsCategoryId: dto.news_category_id,
+        fileName: fileName,
+        filePath: filePath,
       });
-
     } else {
       newsCreate = this.news.create({
         newsTitle: dto.news_title,
@@ -106,6 +110,7 @@ export class NewsService {
       order: {
         createdAt: 'DESC',
       },
+      relations: ['newsCategory'],
     });
 
     if (!getAll) {
@@ -129,19 +134,46 @@ export class NewsService {
     return findNewsNotLabeled;
   }
 
-  async search(title: string, desc: string) {
+  async search(title?: string, desc?: string, id_category?: string) {
+    let query: any = {};
+
+    if (title) {
+      query = { ...query, newsTitle: Like(`%${title}%`) };
+    }
+
+    if (desc) {
+      query = { ...query, newsDescription: Like(`%${desc}%`) };
+    }
+
+    console.log('qyert', query);
+    if (id_category) {
+      const findCategory = await this.newsCategoryRepo.findOne({
+        where: {
+          id: id_category,
+        },
+      });
+
+      console.log('category : ', findCategory);
+
+      if (!findCategory) {
+        throw new Error('Category Not Found');
+      }
+
+      query = { ...query, newsCategoryId: id_category };
+    }
+
     const getAll = await this.news.find({
-      [Op.or]: [
-        { newsTitle: { [Op.like]: `%${title}%` } },
-        { newsDescription: { [Op.like]: `%${desc}%` } },
-      ],
+      where: query,
       order: {
         createdAt: 'DESC',
       },
+      relations: ['newsCategory'],
     });
 
-    if (!getAll) {
-      throw new Error('Error Get News Not Labeled');
+    console.log('newsAll : ', getAll);
+
+    if (!getAll || getAll.length === 0) {
+      throw new Error('Error Get News');
     }
 
     return getAll;
@@ -155,7 +187,7 @@ export class NewsService {
     });
 
     if (!findNewsNotLabeled) {
-      throw new Error('Error Get News Not Labeled');
+      throw new Error('Error Get News Not Labeled or Nothing');
     }
 
     await this.news.delete({

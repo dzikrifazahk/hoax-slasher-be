@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NewsCategoryEntity } from './entities/news-category.entity';
 import { NewsCategoryController } from './controllers/news-category.controller';
 import { NewsCategoryService } from './services/news-category.service';
-import { NewsNotLabeledController } from './controllers/news.controller';
+import { NewsController } from './controllers/news.controller';
 import { NewsEntity } from './entities/news.entity';
 import { NewsService } from './services/news.service';
 
@@ -14,7 +14,8 @@ import { NewsService } from './services/news.service';
       NewsEntity,
     ]),
   ],
-  controllers: [NewsNotLabeledController, NewsCategoryController],
+  controllers: [NewsController, NewsCategoryController],
   providers: [NewsCategoryService, NewsService],
+  exports: [NewsCategoryService]
 })
 export class NewsModule {}

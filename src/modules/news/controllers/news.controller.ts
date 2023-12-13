@@ -15,13 +15,13 @@ import {
 } from '@nestjs/common';
 import { NewsService } from '../services/news.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateNewsDtoIn } from '../dto/news.dto';
+import { CreateNewsDtoIn, SearchNewsDto } from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('News')
 @Controller('news')
-export class NewsNotLabeledController {
+export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @Post('/')
@@ -71,14 +71,15 @@ export class NewsNotLabeledController {
   @ApiResponse({
     type: CreateNewsDtoIn,
   })
-  async search(
-    @Query('title') title: string,
-    @Query('description') description: string,
-  ) {
+  async search(@Query() dto: SearchNewsDto) {
     // TODO: implement searching functionality
-    const search = await this.newsService.search(title, description);
+    const search = await this.newsService.search(
+      dto.news_title,
+      dto.news_description,
+      dto.newsCategory,
+    );
 
-    return new BaseDto('Success Get All News Not Labeled', search);
+    return new BaseDto('Success Get All News', search);
   }
 
   @Get(':id')

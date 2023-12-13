@@ -1,4 +1,4 @@
-import { ApiOAuth2, ApiProperty } from '@nestjs/swagger';
+import { ApiOAuth2, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateNewsDtoIn {
   @ApiProperty({
@@ -42,7 +42,7 @@ export class CreateNewsDtoIn {
     example: 'file.jpg',
     nullable: true
   })
-  file_name?: Date;
+  file_name?: string;
 
   @ApiProperty({
     type: String,
@@ -82,4 +82,28 @@ export class UpdateNewsDtoIn {
     example: '2023-11-28 19:30:43.934129',
   })
   news_publish_date: Date;
+}
+
+export class SearchNewsDto {
+  @ApiPropertyOptional({
+    type: String,
+    example: 'News Title',
+    nullable: true
+  })
+  news_title?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'News Description',
+    nullable: true
+  })
+  news_description?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'id',
+    nullable: true
+  })
+  newsCategory?: string;
+
 }
