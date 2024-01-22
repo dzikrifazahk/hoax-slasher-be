@@ -4,14 +4,15 @@ export class CommonColumn {
     @Column({
         name: 'created_at',
         type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
+        // default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date;
 
     @Column({
         name: 'updated_at',
         type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
+        nullable: true
+        // default: () => 'CURRENT_TIMESTAMP',
     })
     updatedAt: Date;
 }

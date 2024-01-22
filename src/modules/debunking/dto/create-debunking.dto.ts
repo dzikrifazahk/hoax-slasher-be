@@ -35,6 +35,14 @@ export class CreateDebunkingDtoIn {
         type: String,
         example: 'abbb64a1-ac91-4c8f-b48b-87d41c426041'
     })
-    user_id: string;
+    userId: string;
 
+}
+
+export class ValidateDebunkingDto {
+    @ApiProperty({
+        type: Boolean,
+        example: 'true'
+    })
+    is_validated: boolean;
 }

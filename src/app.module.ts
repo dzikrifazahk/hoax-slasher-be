@@ -12,6 +12,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CommunityModule } from './modules/community/community.module';
 import { NewsModule } from './modules/news/news.module';
 import { TrustedSourceModule } from './modules/trusted_source/trusted_source.module';
+import { DebunkingModule } from './modules/debunking/debunking.module';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -29,8 +31,10 @@ import { TrustedSourceModule } from './modules/trusted_source/trusted_source.mod
     UsersModule,
     AuthModule,
     NewsModule,
+    DebunkingModule,
     TrustedSourceModule,
-    CommunityModule
+    CommunityModule,
+    EventsModule
   ],
   controllers: [AppController],
   providers: [AppService],

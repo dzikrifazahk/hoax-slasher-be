@@ -1,4 +1,6 @@
 import { ApiOAuth2, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { NewsEmotionStatus, NewsLabel } from 'src/common/enum/enum';
+import { IsBoolean, IsDate, IsNotEmpty, IsString, IsUUID } from '@nestjs/class-validator';
 
 export class CreateNewsDtoIn {
   @ApiProperty({
@@ -40,16 +42,23 @@ export class CreateNewsDtoIn {
   @ApiProperty({
     type: String,
     example: 'file.jpg',
-    nullable: true
+    nullable: true,
   })
   file_name?: string;
 
   @ApiProperty({
     type: String,
     example: 'user/src/sss',
-    nullable: true
+    nullable: true,
   })
   file_path?: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'News Label',
+    nullable: true,
+  })
+  label: NewsLabel;
 }
 
 export class UpdateNewsDtoIn {
@@ -88,22 +97,58 @@ export class SearchNewsDto {
   @ApiPropertyOptional({
     type: String,
     example: 'News Title',
-    nullable: true
+    nullable: true,
   })
   news_title?: string;
 
   @ApiPropertyOptional({
     type: String,
     example: 'News Description',
-    nullable: true
+    nullable: true,
   })
   news_description?: string;
 
   @ApiPropertyOptional({
     type: String,
     example: 'id',
-    nullable: true
+    nullable: true,
   })
   newsCategory?: string;
+}
 
+export class UpdatedPredictDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  label: NewsLabel;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  is_ambiguous: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  is_training: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  training_date: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  news_emotion: NewsEmotionStatus;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  percentage: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  ambiguous_percentage: string;
 }

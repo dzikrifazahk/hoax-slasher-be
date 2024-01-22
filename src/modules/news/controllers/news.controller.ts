@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { NewsService } from '../services/news.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateNewsDtoIn, SearchNewsDto } from '../dto/news.dto';
+import { CreateNewsDtoIn, SearchNewsDto, UpdatedPredictDto } from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -82,6 +82,20 @@ export class NewsController {
     return new BaseDto('Success Get All News', search);
   }
 
+  @Patch('/updatePredict/:id')
+  @ApiOperation({
+    summary: 'Update news not labeled',
+    description: 'Update news not labeled',
+  })
+  @ApiResponse({
+    type: UpdatedPredictDto,
+  })
+  async updatePredict(@Param('id') id: string, @Body() dto: UpdatedPredictDto) {
+    const updated = await this.newsService.updatedPredict(id, dto);
+
+    return new BaseDto('Success Update News Not Labeled', updated);
+  }
+  
   @Get(':id')
   @ApiOperation({
     summary: 'Get one news not labeled',

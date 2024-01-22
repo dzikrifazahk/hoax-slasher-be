@@ -1,13 +1,13 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { NewsEntity } from '../entities/news.entity';
 import { Like, Repository } from 'typeorm';
-import { CreateNewsDtoIn } from '../dto/news.dto';
 import { NewsLabel } from 'src/common/enum/enum';
 const { Op } = require('sequelize');
 const fs = require('fs-extra');
 const REF_IMAGE = 'news';
 import * as path from 'path';
 import { NewsCategoryEntity } from '../entities/news-category.entity';
+import { CreateNewsDtoIn, UpdatedPredictDto } from '../dto/news.dto';
 
 export class NewsService {
   constructor(
@@ -19,6 +19,8 @@ export class NewsService {
 
   async create(dto: CreateNewsDtoIn, file?: Express.Multer.File) {
     let newsCreate: NewsEntity;
+    console.log('dtocreate',dto)
+    
     if (file) {
       const { originalname, buffer } = file;
       const uploadDirectory = process.env.UPLOADS_DIRECTORY;
@@ -45,25 +47,29 @@ export class NewsService {
 
       // Create the data entry linked to the uploaded file
       newsCreate = this.news.create({
-        newsTitle: dto.news_title,
-        newsDescription: dto.news_description,
-        newsAuthor: dto.news_author,
-        newsSource: dto.news_source,
-        newsPublishDate: dto.news_publish_date,
+        news_title: dto.news_title,
+        news_description: dto.news_description,
+        news_author: dto.news_author,
+        news_source: dto.news_source,
+        news_publish_date: dto.news_publish_date,
         newsCategoryId: dto.news_category_id,
-        fileName: fileName,
-        filePath: filePath,
+        file_name: fileName,
+        file_path: filePath,
+        label: dto.label
       });
     } else {
       newsCreate = this.news.create({
-        newsTitle: dto.news_title,
-        newsDescription: dto.news_description,
-        newsAuthor: dto.news_author,
-        newsSource: dto.news_source,
-        newsPublishDate: dto.news_publish_date,
+        news_title: dto.news_title,
+        news_description: dto.news_description,
+        news_author: dto.news_author,
+        news_source: dto.news_source,
+        news_publish_date: dto.news_publish_date,
         newsCategoryId: dto.news_category_id,
+        label: dto.label
       });
     }
+
+    newsCreate.createdAt = new Date();
 
     await this.news.save(newsCreate);
 
@@ -78,19 +84,19 @@ export class NewsService {
     });
 
     if (dto.news_title) {
-      find.newsTitle = dto.news_title;
+      find.news_title = dto.news_title;
     }
     if (dto.news_description) {
-      find.newsDescription = dto.news_description;
+      find.news_description = dto.news_description;
     }
     if (dto.news_author) {
-      find.newsAuthor = dto.news_author;
+      find.news_author = dto.news_author;
     }
     if (dto.news_source) {
-      find.newsSource = dto.news_source;
+      find.news_source = dto.news_source;
     }
     if (dto.news_publish_date) {
-      find.newsPublishDate = dto.news_publish_date;
+      find.news_publish_date = dto.news_publish_date;
     }
     if (dto.news_category_id) {
       find.newsCategoryId = dto.news_category_id;
@@ -98,8 +104,32 @@ export class NewsService {
     find.updatedAt = new Date();
 
     find.label = NewsLabel.NOT_TRAINED;
-    find.isTraining = false;
+    find.is_training = false;
 
+    await this.news.save(find);
+
+    return find;
+  }
+
+  async updatedPredict(id: string, dto: UpdatedPredictDto) {
+    const find = await this.news.findOne({
+      where: {
+        id: id,
+      },
+    });
+    
+    find.label = dto.label;
+    find.is_ambiguous = dto.is_ambiguous;
+    find.is_training = dto.is_training;
+    find.training_date = dto.training_date;
+    find.news_emotion = dto.news_emotion;
+    find.percentage = dto.percentage;
+    find.ambiguous_percentage = dto.ambiguous_percentage;
+    
+    find.updatedAt = new Date();
+    console.log('dtonii' ,dto);
+    
+    console.log('find' ,find);
     await this.news.save(find);
 
     return find;
@@ -138,11 +168,11 @@ export class NewsService {
     let query: any = {};
 
     if (title) {
-      query = { ...query, newsTitle: Like(`%${title}%`) };
+      query = { ...query, news_title: Like(`%${title}%`) };
     }
 
     if (desc) {
-      query = { ...query, newsDescription: Like(`%${desc}%`) };
+      query = { ...query, news_description: Like(`%${desc}%`) };
     }
 
     console.log('qyert', query);

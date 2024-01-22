@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@nestjs/class-validator':
+    specifier: 0.13.1
+    version: 0.13.1
   '@nestjs/common':
     specifier: ^10.0.0
     version: 10.2.10(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -892,6 +895,14 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /@nestjs/class-validator@0.13.1:
+    resolution: {integrity: sha512-Wwpg9KuGnkWOFleBPEFdHQKwqZsF/PFWQaeSaXwatkofgqD7N6AV5J30xIVgScDP+IcE+MdPGZJ38vHQ24KxPQ==}
+    dependencies:
+      '@types/validator': 13.11.7
+      libphonenumber-js: 1.10.51
+      validator: 13.11.0
     dev: false
 
   /@nestjs/cli@10.2.1:
@@ -4178,6 +4189,10 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
     dev: true
+
+  /libphonenumber-js@1.10.51:
+    resolution: {integrity: sha512-vY2I+rQwrDQzoPds0JeTEpeWzbUJgqoV0O4v31PauHBb/e+1KCXKylHcDnBMgJZ9fH9mErsEbROJY3Z3JtqEmg==}
+    dev: false
 
   /lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}

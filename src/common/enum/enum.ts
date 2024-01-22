@@ -16,3 +16,8 @@ export enum NewsLabel {
     AKTUAL = 'AKTUAL',
     NOT_TRAINED = 'NOT_TRAINED'
 }
+
+export enum NewsEmotionStatus {
+  UJARAN_KEBENCIAN = 'UJARAN_KEBENCIAN',
+  SARA = 'SARA',
+}

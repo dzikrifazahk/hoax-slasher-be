@@ -12,36 +12,36 @@ export class NewsEntity extends CommonColumn {
     name: 'news_title',
     type: 'varchar',
   })
-  newsTitle: string;
+  news_title: string;
 
   @Column({
     name: 'news_description',
     type: 'varchar',
   })
-  newsDescription: string;
+  news_description: string;
 
   @Column({
     name: 'news_author',
     type: 'varchar',
   })
-  newsAuthor: string;
+  news_author: string;
 
   @Column({
     name: 'news_source',
     type: 'varchar',
   })
-  newsSource: string;
+  news_source: string;
 
   @Column({
     name: 'news_publish_date',
     type: 'varchar',
   })
-  newsPublishDate: Date;
+  news_publish_date: Date;
 
   @Column({
     name: 'label',
     type: 'varchar',
-    default: NewsLabel.NOT_TRAINED,
+    // default: NewsLabel.NOT_TRAINED,
   })
   label: NewsLabel;
 
@@ -50,42 +50,63 @@ export class NewsEntity extends CommonColumn {
     type: 'boolean',
     default: false,
   })
-  isAmbiguous: boolean;
+  is_ambiguous: boolean;
 
   @Column({
     name: 'is_training',
     type: 'boolean',
     default: false,
   })
-  isTraining: boolean;
+  is_training: boolean;
 
   @Column({
-    name: 'is_training_date',
-    type: 'boolean',
+    name: 'training_date',
+    type: 'date',
     nullable: true
   })
-  trainingDate: Date;
+  training_date: Date;
 
   @Column({
     name: 'file_name',
     type: 'varchar',
     nullable: true
   })
-  fileName: string;
+  file_name: string;
 
   @Column({
     name: 'file_path',
     type: 'varchar',
     nullable: true
   })
-  filePath: string;
+  file_path: string;
 
   @Column({
     name: 'counter_view',
     type: 'integer',
     default: 0,
   })
-  counterView: number;
+  counter_view: number;
+
+  @Column({
+    name: 'news_emotion',
+    type: 'varchar',
+    nullable: true
+  })
+  news_emotion: string;
+
+  @Column({
+    name: 'percentage',
+    type: 'varchar',
+    nullable: true
+  })
+  percentage: string;
+
+  @Column({
+    name: 'ambiguous_percentage',
+    type: 'varchar',
+    nullable: true
+  })
+  ambiguous_percentage: string;
 
   @Column({
     name: 'news_category_id',
