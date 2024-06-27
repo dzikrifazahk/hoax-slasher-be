@@ -6,6 +6,8 @@ import {
   //   Param,
   //   Delete,
   UseGuards,
+  Param,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -54,34 +56,34 @@ export class EventsCommentsController {
   async findAll() {
     const getAll = await this.eventCommentsService.findAll();
 
-    return new BaseDto('Success Get All Education Events', getAll);
+    return new BaseDto('Success Get All Event Comments', getAll);
   }
 
-  //   @Get(':id')
-  //   @ApiOperation({
-  //     summary: 'Get one education events',
-  //     description: 'Get one education events',
-  //   })
-  //   @ApiResponse({
-  //     type: EducationEventResponseDtoOut,
-  //   })
-  //   async findOne(@Param('id') id: string) {
-  //     const getOne = await this.eventCommentsService.findOne(id);
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get one education events',
+    description: 'Get one education events',
+  })
+  @ApiResponse({
+    type: EventCommentsResponseDtoOut,
+  })
+  async findOne(@Param('id') id: string) {
+    const getOne = await this.eventCommentsService.findOne(id);
 
-  //     return new BaseDto('Success Get One Education Event', getOne);
-  //   }
+    return new BaseDto('Success Get One Event Comment', getOne);
+  }
 
-  //   @Delete(':id')
-  //   @ApiOperation({
-  //     summary: 'Delete one education events',
-  //     description: 'Delete one education events',
-  //   })
-  //   @ApiResponse({
-  //     type: EducationEventResponseDtoOut,
-  //   })
-  //   async remove(@Param('id') id: string) {
-  //     const remove = await this.eventCommentsService.remove(id);
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete one education events',
+    description: 'Delete one education events',
+  })
+  @ApiResponse({
+    type: EventCommentsResponseDtoOut,
+  })
+  async remove(@Param('id') id: string) {
+    const remove = await this.eventCommentsService.remove(id);
 
-  //     return new BaseDto('Success Delete Education Event', remove);
-  //   }
+    return new BaseDto('Success Delete Event Comment', remove);
+  }
 }

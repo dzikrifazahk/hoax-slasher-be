@@ -82,7 +82,7 @@ export class EventCommentsService {
       where: {
         id: id,
       },
-      relations: ['comments'],
+      relations: ['educationEvent', 'user'],
     });
     if (!foundEvent) {
       throw new BadRequestException('No data found');
