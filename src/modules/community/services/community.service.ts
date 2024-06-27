@@ -1,124 +1,162 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCommunityDtoIn, UpdateCommunityDto } from '../dto/community.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateOrUpdateCommunityDtoIn,
+  UpdateCommunityDto,
+} from '../dto/community.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from '../entities/community.entity';
 import { ILike, Repository } from 'typeorm';
 import { CommunityStatus } from 'src/common/enum/enum';
+import { UsersService } from 'src/modules/users/users.service';
+import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class CommunityService {
   constructor(
     @InjectRepository(CommunityEntity)
     private readonly communityRepository: Repository<CommunityEntity>,
+    private readonly usersService: UsersService,
   ) {}
 
-  async create(dto: CreateCommunityDtoIn) {
-    const MINIMUM_NAME_LENGTH = 1;
+  async createOrUpdate(dto: CreateOrUpdateCommunityDtoIn) {
+    const MINIMUM_NAME_LENGTH = 2;
     const MINIMUM_DESCRIPTION_LENGTH = 3;
+    let message: string;
 
-    const findCommunity = await this.communityRepository.findOne({
-      where: {
-        communityName: ILike(`%${dto.community_name.toLowerCase()}%`),
-      },
-    });
+    const foundCommunity = dto.id
+      ? await this.communityRepository.findOne({
+          where: {
+            id: dto.id,
+          },
+        })
+      : null;
 
-    if (dto.community_name.length < MINIMUM_NAME_LENGTH) {
+    console.log('ketemu', foundCommunity);
+    
+    if (dto.leader && !isUUID(dto.leader)) {
+      throw new BadRequestException('Leader must be a valid UUID');
+    }
+
+    if (dto.name.length < MINIMUM_NAME_LENGTH) {
       throw new BadRequestException(
         `community name should be at least ${MINIMUM_NAME_LENGTH} character long`,
       );
     }
 
-    if (dto.community_description.length < MINIMUM_DESCRIPTION_LENGTH) {
+    if (dto.description.length < MINIMUM_DESCRIPTION_LENGTH) {
       throw new BadRequestException(
         `community description should be at least ${MINIMUM_DESCRIPTION_LENGTH} character long`,
       );
     }
 
-    if (findCommunity) {
-      throw new BadRequestException('community already registered');
+    if (!foundCommunity) {
+      const newCommunity = this.communityRepository.create({
+        name: dto.name,
+        ...(dto.description && { description: dto.description }),
+        ...(dto.address && { address: dto.address }),
+        ...(dto.leader && { leader: dto.leader }),
+      });
+      await this.communityRepository.save(newCommunity);
+
+      message = 'Success Create Community';
+
+      return { community: newCommunity, message: message };
+    } else {
+      if (dto.name) {
+        foundCommunity.name = dto.name;
+      }
+      if (dto.description) {
+        foundCommunity.description = dto.description;
+      }
+      if (dto.address) {
+        foundCommunity.address = dto.address;
+      }
+      if (dto.leader) {
+        foundCommunity.leader = dto.leader;
+      }
+
+      await this.communityRepository.save(foundCommunity);
+
+      message = 'Success Update Community';
+
+      return { community: foundCommunity, message: message };
     }
-
-    const newCommunity = this.communityRepository.create({
-      communityName: dto.community_name,
-      communityDescription: dto.community_description,
-      communityAddress: dto.community_address,
-      community_category_id: dto.community_category_id,
-    });
-
-    await this.communityRepository.save(newCommunity);
-
-    return { communityId: newCommunity.id };
   }
 
   async getAll() {
     const communities = await this.communityRepository.find({
-      where: {
-        communityStatus: CommunityStatus.ACTIVE,
-      },
       order: {
-        createdAt: 'DESC',
+        updatedAt: 'DESC',
       },
     });
 
-    return communities;
+    if (!communities || communities.length === 0) {
+      throw new NotFoundException('Community Not Found');
+    }
+
+    const finalData = await Promise.all(
+      communities.map(async (community) => {
+        let fixedLeaderData: Object;
+
+        if (community.leader != null) {
+          const leader = await this.usersService.findOne(community.leader);
+          fixedLeaderData = {
+            id: community.leader,
+            name: leader?.name ?? null,
+          };
+        } else {
+          fixedLeaderData = {
+            id: community.leader,
+            name: null,
+          };
+        }
+
+        return {
+          ...community,
+          leader: fixedLeaderData,
+        };
+      }),
+    );
+
+    return finalData;
   }
 
   async findOne(id: string) {
-    const findCommunity = await this.communityRepository.findOne({
-      where: {
-        id,
-      },
+    let leaderData: Object;
+
+    const foundCommunity = await this.communityRepository.findOne({
+      where: { id: id },
     });
 
-    if (!findCommunity) {
-      throw new BadRequestException('community not found');
+    if (!foundCommunity) {
+      throw new NotFoundException('Community Not Found');
     }
 
-    return findCommunity;
-  }
-
-  async update(id: string, dto: UpdateCommunityDto) {
-    const find = await this.communityRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-    
-    if (!find) {
-      throw new BadRequestException('community not found');
-    }
-    
-    const findCommunity = await this.communityRepository.findOne({
-      where: {
-        id: find.id,
-      },
-    });
-    
-    if(dto.community_name) {
-      findCommunity.communityName = dto.community_name;
+    if (foundCommunity.leader != null) {
+      const foundLeader = await this.usersService.findOne(
+        foundCommunity.leader,
+      );
+      leaderData = {
+        id: foundCommunity.leader,
+        name: foundLeader?.name ?? null,
+      };
+    } else {
+      leaderData = {
+        id: foundCommunity.leader,
+        name: null,
+      };
     }
 
-    if(dto.community_description) {
-      findCommunity.communityDescription = dto.community_description;
-    }
+    const finalData = {
+      ...foundCommunity,
+      leader: leaderData,
+    };
 
-    if(dto.community_address) {
-      findCommunity.communityAddress = dto.community_address;
-    }
-
-    if(dto.community_status) {
-      findCommunity.communityStatus = dto.community_status;
-    }
-
-    if(dto.community_category_id) {
-      findCommunity.community_category_id = dto.community_category_id;
-    }
-
-    findCommunity.updatedAt = new Date();
-
-    await this.communityRepository.save(findCommunity);
-
-    return findCommunity;
+    return finalData;
   }
 
   async remove(id: string) {

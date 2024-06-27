@@ -104,8 +104,8 @@ export class NewsController {
     type: CreateNewsDtoIn,
   })
   async update(@Param('id') id: string, @Body() dto: CreateNewsDtoIn) {
-    const update = await this.newsService.update(id, dto);
-    return new BaseDto('Success Update One News Not Labeled', update);
+    // const update = await this.newsService.update(id, dto);
+    // return new BaseDto('Success Update One News Not Labeled', update);
   }
 
   @Delete(':id')

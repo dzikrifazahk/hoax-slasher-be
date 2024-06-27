@@ -5,7 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { DtoOutAuth } from './dto/auth.dto';
 
 export interface TokenPayload {
-  userId: string; userEmail: string;
+  userId: string;
+  userEmail: string;
 }
 
 @Injectable()
@@ -16,7 +17,7 @@ export class AuthService {
   ) {}
 
   async login(email: string, password: string): Promise<DtoOutAuth> {
-    const user = await this.userService.findOne(email);
+    const user = await this.userService.findOneByEmail(email);
     if (!user) {
       throw new Error('User not found');
     }
@@ -26,8 +27,9 @@ export class AuthService {
     }
 
     const payload: TokenPayload = {
-      userId: user.id, userEmail: user.email
-    }
+      userId: user.id,
+      userEmail: user.email,
+    };
 
     const resultUser = {
       token: this.jwtService.sign(payload, { secret: process.env.JWT_SECRET }),
@@ -35,12 +37,11 @@ export class AuthService {
         id: user.id,
         role: user.role,
         name: user.name,
-      }
+      },
     };
 
     // return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
     // console.log("Result : ",resultUser);a
     return resultUser;
   }
-
 }

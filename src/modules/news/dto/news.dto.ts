@@ -15,21 +15,33 @@ export class CreateNewsDtoIn {
 
   @ApiProperty({
     type: String,
-    example: 'News Author',
+    example: 'Dzikri Faza',
   })
-  news_author: string;
+  author: string;
 
   @ApiProperty({
     type: String,
-    example: 'News Source',
+    example: 'Narasi',
   })
-  news_source: string;
+  source: string;
 
   @ApiProperty({
     type: Date,
     example: '2023-11-28 19:30:43.934129',
   })
-  news_publish_date: Date;
+  publish_date: Date;
+
+  @ApiProperty({
+    type: String,
+    example: 'Mengadakan, Berita, Alkaline',
+  })
+  news_keywords: string;
+  
+  @ApiProperty({
+    type: String,
+    example: 'Bandung',
+  })
+  location: string;
 
   @ApiProperty({
     type: String,

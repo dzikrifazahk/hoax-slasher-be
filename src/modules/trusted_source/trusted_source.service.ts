@@ -1,6 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTrustedSourceDtoIn } from './dto/create-trusted_source.dto';
-import { UpdateTrustedSourceDto } from './dto/update-trusted_source.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TrustedSourceEntity } from './entities/trusted_source.entity';
 import { Repository } from 'typeorm';
@@ -13,82 +16,95 @@ export class TrustedSourceService {
   ) {}
 
   async createOrUpdate(dto: CreateTrustedSourceDtoIn) {
-    const MINIMUM_NAME_LENGTH = 1;
-    const MINIMUM_DESC_LENGTH = 5;
+    const MINIMUM_NAME_LENGTH = 2;
     let message: string;
-    let saveData: TrustedSourceEntity;
+    console.log('inide', dto.companyName);
+    const foundSource = dto.id
+      ? await this.trustedSourceRepository.findOne({
+          where: {
+            id: dto.id,
+          },
+        })
+      : null;
 
-    const findSourceName = await this.trustedSourceRepository
-      .createQueryBuilder('trusted_source')
-      .orderBy('LOWER(trusted_source.company_name)', 'ASC')
-      .getOne();
-
-    console.log('findSourceName', findSourceName);
-
-    if (findSourceName) {
-      if (dto.company_name) {
-        findSourceName.company_name = dto.company_name;
-      }
-
-      if (dto.company_description) {
-        findSourceName.company_description =
-          dto.company_description;
-      }
-
-      if (dto.company_email) {
-        findSourceName.company_email = dto.company_email;
-      }
-
-      findSourceName.updatedAt = new Date();
-
-      await this.trustedSourceRepository.save(findSourceName);
-
-      message = 'News Category Updated';
-    } else {
-      if (dto.company_name.length < MINIMUM_NAME_LENGTH) {
-        throw new BadRequestException(
-          `news category name should be at least ${MINIMUM_NAME_LENGTH} character long`,
-        );
-      }
-
-      if (dto.company_description.length < MINIMUM_DESC_LENGTH) {
-        throw new BadRequestException(
-          `news description should be at least ${MINIMUM_DESC_LENGTH} character long`,
-        );
-      }
-
-      saveData = await this.trustedSourceRepository.create({
-        company_name: dto.company_name,
-        company_description: dto.company_description,
-        company_email: dto.company_email,
-      });
-
-      await this.trustedSourceRepository.save(saveData);
-      message = 'News Category Created';
+    if (dto.companyName.length < MINIMUM_NAME_LENGTH) {
+      throw new BadRequestException(
+        `Company name should be at least ${MINIMUM_NAME_LENGTH} characters long`,
+      );
     }
 
-    // const updatedNewsCategory = await this.trustedSourceRepository.findOne({
-    //   where: {
-    //     aliasCode: dto.alias_code,
-    //   },
-    // });
+    if (foundSource) {
+      if (dto.companyName) {
+        foundSource.company_name = dto.companyName;
+      }
 
-    return { message: message, data: saveData };
+      if (dto.companyDescription) {
+        foundSource.company_description = dto.companyDescription;
+      }
+
+      if (dto.companyEmail) {
+        foundSource.company_email = dto.companyEmail;
+      }
+
+      foundSource.updatedAt = new Date();
+
+      await this.trustedSourceRepository.save(foundSource);
+
+      message = 'News Category Updated';
+
+      return { message: message, data: foundSource };
+    } else {
+      const createData = this.trustedSourceRepository.create({
+        company_name: dto.companyName,
+        ...(dto.companyDescription && {
+          company_description: dto.companyDescription,
+        }),
+        ...(dto.companyEmail && { company_email: dto.companyEmail }),
+      });
+
+      await this.trustedSourceRepository.save(createData);
+      message = 'News Category Created';
+      return { message: message, data: createData };
+    }
   }
 
-  findAll() {
-    return `This action returns all trustedSource`;
+  async findAll() {
+    const foundSource = await this.trustedSourceRepository.find();
+
+    if (!foundSource) {
+      throw new NotFoundException('No News Category Found');
+    }
+
+    return foundSource;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} trustedSource`;
+  async findOne(id: string) {
+    const foundSource = await this.trustedSourceRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!foundSource) {
+      throw new NotFoundException('No News Category Found');
+    }
+
+    return foundSource;
   }
 
-  update(id: number, updateTrustedSourceDto: UpdateTrustedSourceDto) {
-    return `This action updates a #${id} trustedSource`;
-  }
+  async remove(id: string) {
+    const foundSource = await this.trustedSourceRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} trustedSource`;
+    if (!foundSource) {
+      throw new NotFoundException('No News Category Found');
+    }
+
+    await this.trustedSourceRepository.remove(foundSource);
+
+    return foundSource;
   }
 }

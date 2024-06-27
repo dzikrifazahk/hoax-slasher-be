@@ -1,7 +1,15 @@
 import { CommonColumn } from 'src/common/column/common-column';
 import { NewsLabel } from 'src/common/enum/enum';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { NewsCategoryEntity } from './news-category.entity';
+import { UserEntity } from 'src/modules/users/entities/user.entity';
 
 @Entity('news')
 export class NewsEntity extends CommonColumn {
@@ -11,87 +19,121 @@ export class NewsEntity extends CommonColumn {
   @Column({
     name: 'news_title',
     type: 'varchar',
+    nullable: true,
   })
-  newsTitle: string;
+  news_title: string;
 
   @Column({
     name: 'news_description',
     type: 'varchar',
+    nullable: true,
   })
-  newsDescription: string;
+  news_descriptioin: string;
 
   @Column({
-    name: 'news_author',
+    name: 'author',
     type: 'varchar',
+    nullable: true,
   })
-  newsAuthor: string;
+  author: string;
 
   @Column({
-    name: 'news_source',
+    name: 'source',
     type: 'varchar',
+    nullable: true,
   })
-  newsSource: string;
+  source: string;
 
   @Column({
-    name: 'news_publish_date',
+    name: 'publish_date',
     type: 'varchar',
+    nullable: true,
   })
-  newsPublishDate: Date;
+  publish_date: Date;
 
   @Column({
-    name: 'label',
-    type: 'varchar',
-    default: NewsLabel.NOT_TRAINED,
+    name: 'news_keywords',
+    type: 'text',
+    nullable: true,
   })
-  label: NewsLabel;
-
-  @Column({
-    name: 'is_ambiguous',
-    type: 'boolean',
-    default: false,
-  })
-  isAmbiguous: boolean;
+  news_keywords: string;
 
   @Column({
     name: 'is_training',
     type: 'boolean',
     default: false,
   })
-  isTraining: boolean;
+  is_training: boolean;
 
   @Column({
-    name: 'is_training_date',
+    name: 'training_date',
     type: 'boolean',
-    nullable: true
+    nullable: true,
   })
-  trainingDate: Date;
+  training_date: Date;
+
+  @Column({
+    name: 'label',
+    type: 'varchar',
+    default: NewsLabel.NOT_TRAINED,
+  })
+  label: string;
+
+  @Column({
+    name: 'location',
+    type: 'varchar',
+    nullable: true,
+  })
+  location: string;
+
+  @Column({
+    name: 'validated_date',
+    type: 'timestamp',
+    default: null,
+  })
+  validated_date: Date;
 
   @Column({
     name: 'file_name',
     type: 'varchar',
-    nullable: true
+    nullable: true,
   })
-  fileName: string;
+  url: string;
+
+  @Column({
+    name: 'is_debunking',
+    type: 'boolean',
+    nullable: true,
+  })
+  is_debunking: boolean;
+
+  @Column({
+    name: 'views_total',
+    type: 'integer',
+    default: 0,
+  })
+  views_total: number;
+
+  @Column({
+    name: 'file_name',
+    type: 'varchar',
+    nullable: true,
+  })
+  file_name: string;
 
   @Column({
     name: 'file_path',
     type: 'varchar',
-    nullable: true
+    nullable: true,
   })
-  filePath: string;
-
-  @Column({
-    name: 'counter_view',
-    type: 'integer',
-    default: 0,
-  })
-  counterView: number;
+  file_path: string;
 
   @Column({
     name: 'news_category_id',
     type: 'varchar',
+    nullable: true,
   })
-  newsCategoryId: string;
+  news_category_id: string;
 
   @ManyToOne(() => NewsCategoryEntity, {
     onUpdate: 'CASCADE',
@@ -103,4 +145,7 @@ export class NewsEntity extends CommonColumn {
   })
   newsCategory: NewsCategoryEntity;
 
+  @OneToOne(() => UserEntity)
+  @JoinColumn()
+  validated_by: UserEntity;
 }

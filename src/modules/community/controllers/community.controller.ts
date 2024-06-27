@@ -1,27 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CommunityService } from '../services/community.service';
-import { CreateCommunityDtoIn, UpdateCommunityDto } from '../dto/community.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateOrUpdateCommunityDtoIn, UpdateCommunityDto } from '../dto/community.dto';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDtoIn, CreateUserDtoOut } from 'src/modules/users/dto/create-user.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @ApiTags('Community')
 @Controller('community')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
-  @Post('/create-community')
+  @Post('/createOrUpdate')
   @ApiOperation({
-    summary: 'Create new community',
-    description: 'Create new community',
+    summary: '** Create Or Update ** (ATTENTION PLEASE READ DESCRIPTION)',
+    description:
+      'Create Or Update Community, Delete (id) from body json for create data || required field `name` ',
   })
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
     type: CreateUserDtoOut,
   })
-  async create(@Body() dto: CreateCommunityDtoIn) {
-    return this.communityService.create(dto);
+  async create(@Body() dto: CreateOrUpdateCommunityDtoIn) {
+    const data = await this.communityService.createOrUpdate(dto);
+    return new BaseDto(data.message, data.community);
   }
 
   @Get('/')
@@ -32,7 +37,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Get all community',
-    type: CreateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn
   })
   async findAll() {
     const getAll = await this.communityService.getAll();
@@ -47,26 +52,11 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Get one community',
-    type: CreateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn
   })
   async findOne(@Param('id') id: string) {
     const getOne = await this.communityService.findOne(id);
     return new BaseDto('Success Get One Community', getOne);
-  }
-
-  @Patch(':id')
-  @ApiOperation({
-    summary: 'Update one community',
-    description: 'Update one community',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Update one community',
-    type: UpdateCommunityDto
-  })
-  async update(@Param('id') id: string, @Body() updateCommunityDto: UpdateCommunityDto) {
-    const updateData = await this.communityService.update(id, updateCommunityDto);
-    return new BaseDto('Success Update Community', updateData);
   }
 
   @Delete(':id')
@@ -77,7 +67,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Delete one community',
-    type: CreateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn
   })
   async remove(@Param('id') id: string) {
     const deleteData = await this.communityService.remove(id);

@@ -4,15 +4,14 @@ import { CommunityController } from './controllers/community.controller';
 import { TypeORMError } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommunityEntity } from './entities/community.entity';
-import { CommunityCategoryEntity } from './entities/community-category.entity';
-import { CommunityCategoryController } from './controllers/community-category.controller';
-import { CommunityCategoryService } from './services/community-category.service';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { PasswordHash } from 'src/security/password-hash';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CommunityEntity, CommunityCategoryEntity]),
-  ],
-  controllers: [CommunityController, CommunityCategoryController],
-  providers: [CommunityService, CommunityCategoryService],
+  imports: [TypeOrmModule.forFeature([CommunityEntity, UserEntity])],
+  controllers: [CommunityController],
+  providers: [CommunityService, JwtService, PasswordHash, UsersService],
 })
 export class CommunityModule {}

@@ -15,12 +15,14 @@ export class TrustedSourceEntity extends CommonColumn {
   @Column({
     name: 'company_description',
     type: 'varchar',
+    nullable: true
   })
   company_description: string;
 
   @Column({
     name: 'company_email',
     type: 'varchar',
+    nullable: true
   })
   company_email: string;
 }

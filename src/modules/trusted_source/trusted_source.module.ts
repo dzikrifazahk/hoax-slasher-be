@@ -5,11 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TrustedSourceEntity } from './entities/trusted_source.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      TrustedSourceEntity
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([TrustedSourceEntity])],
   controllers: [TrustedSourceController],
   providers: [TrustedSourceService],
 })

@@ -7,21 +7,21 @@ export class NewsCategoryEntity extends CommonColumn {
   id: string;
 
   @Column({
-    name: 'news_category_name',
+    name: 'name',
     type: 'varchar',
   })
-  newsCategoryName: string;
+  name: string;
 
   @Column({
-    name: 'news_category_description',
+    name: 'description',
     type: 'varchar',
   })
-  newsCategoryDescription: string;
+  description: string;
 
   @Column({
     name: 'alias_code',
     type: 'integer',
+    nullable: true,
   })
-  aliasCode: number;
-
+  alias_code: number;
 }

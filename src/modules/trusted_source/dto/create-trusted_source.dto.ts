@@ -1,22 +1,31 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
 export class CreateTrustedSourceDtoIn {
-    @ApiProperty({
-        type: String,
-        example: 'Company Name',
-    })
-    company_name: string;
+  @ApiPropertyOptional({
+    example: '3c143ad2-6d70-4053-a0ae-82311b7a9d6a',
+  })
+  @IsUUID()
+  id?: string;
 
-    @ApiProperty({
-        type: String,
-        example: 'Company Description',
-    })
-    company_description: string;
+  @ApiProperty({
+    type: String,
+    example: 'Company Name',
+    required: true,
+    minLength: 2
+  })
+  companyName: string;
 
-    @ApiProperty({
-        type: String,
-        example: 'mail@company.com',
-    })
-    company_email: string;
+  @ApiPropertyOptional({
+    type: String,
+    required: false,
+    example: 'Company Description',
+  })
+  companyDescription?: string;
 
+  @ApiPropertyOptional({
+    type: String,
+    example: 'mail@company.com',
+  })
+  companyEmail?: string;
 }

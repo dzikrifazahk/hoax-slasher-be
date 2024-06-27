@@ -7,12 +7,9 @@ import { UsersService } from '../users/users.service';
 import { PasswordHash } from 'src/security/password-hash';
 
 @Module({
-  imports: [
-    UsersModule,
-    JwtModule
-],
+  imports: [UsersModule, JwtModule],
   controllers: [AuthController],
   providers: [AuthService, UsersService, PasswordHash],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}

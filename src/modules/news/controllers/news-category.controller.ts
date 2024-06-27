@@ -1,7 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NewsCategoryService } from '../services/news-category.service';
-import { CreateNewsCategoryDtoIn } from '../dto/news-category.dto';
+import {
+  CreateNewsCategoryDtoIn,
+  ResponseNewsCategoryDtoOut,
+} from '../dto/news-category.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 
 @ApiTags('News Category')
@@ -9,11 +12,11 @@ import { BaseDto } from 'src/common/dtos/base.dto';
 export class NewsCategoryController {
   constructor(private readonly newsCategoryService: NewsCategoryService) {}
 
-  @Post('/')
+  @Post('/createOrUpdate')
   @ApiOperation({
-    summary: '** Create Or Update ** news category',
+    summary: '** Create Or Update ** (ATTENTION PLEASE READ DESCRIPTION)',
     description:
-      'Create Or Update news category, if update this validate the alias code',
+      'Create Or Update news category, Delete (id) from body json for create data || alias_code is optional (remove alias_code from the body if want to send without alias_code)',
   })
   @ApiResponse({
     type: CreateNewsCategoryDtoIn,
@@ -29,10 +32,10 @@ export class NewsCategoryController {
     description: 'Get all news category',
   })
   @ApiResponse({
-    type: CreateNewsCategoryDtoIn,
+    type: ResponseNewsCategoryDtoOut,
   })
   async findAll() {
-    const getAll = await this.newsCategoryService.getAllNewsCategory();
+    const getAll = await this.newsCategoryService.findAllNewsCategories();
 
     return new BaseDto('Success Get All News Category', getAll);
   }
@@ -43,7 +46,7 @@ export class NewsCategoryController {
     description: 'Get one news category',
   })
   @ApiResponse({
-    type: CreateNewsCategoryDtoIn,
+    type: ResponseNewsCategoryDtoOut,
   })
   async findOne(@Param('id') id: string) {
     const getOne = await this.newsCategoryService.findOne(id);

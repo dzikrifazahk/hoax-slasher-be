@@ -14,5 +14,5 @@ export enum CommunityStatus {
 export enum NewsLabel {
     HOAX = 'HOAX',
     AKTUAL = 'AKTUAL',
-    NOT_TRAINED = 'NOT_TRAINED'
+    NOT_TRAINED = 'NOT TRAINED'
 }

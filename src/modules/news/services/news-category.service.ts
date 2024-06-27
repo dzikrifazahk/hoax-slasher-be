@@ -14,28 +14,28 @@ export class NewsCategoryService {
     const MINIMUM_NAME_LENGTH = 1;
     const MINIMUM_DESC_LENGTH = 5;
     let message: string;
-    let saveData: NewsCategoryEntity;
 
-    const findNewsCategory = await this.newsCategoryRepository.findOne({
-      where: {
-        aliasCode: dto.alias_code,
-      },
-    });
+    const findNewsCategory = dto.id
+      ? await this.newsCategoryRepository.findOne({
+          where: {
+            id: dto.id,
+          },
+        })
+      : null;
 
     console.log('findNewsCategory', findNewsCategory);
 
     if (findNewsCategory) {
-      if (dto.news_category_name) {
-        findNewsCategory.newsCategoryName = dto.news_category_name;
+      if (dto.name) {
+        findNewsCategory.name = dto.name;
       }
 
-      if (dto.news_category_description) {
-        findNewsCategory.newsCategoryDescription =
-          dto.news_category_description;
+      if (dto.description) {
+        findNewsCategory.description = dto.description;
       }
 
-      if (dto.alias_code) {
-        findNewsCategory.aliasCode = dto.alias_code;
+      if (dto.aliasCode) {
+        findNewsCategory.alias_code = dto.aliasCode;
       }
 
       findNewsCategory.updatedAt = new Date();
@@ -44,48 +44,49 @@ export class NewsCategoryService {
 
       message = 'News Category Updated';
     } else {
-      if (dto.news_category_name.length < MINIMUM_NAME_LENGTH) {
+      if (dto.name.length < MINIMUM_NAME_LENGTH) {
         throw new BadRequestException(
-          `news category name should be at least ${MINIMUM_NAME_LENGTH} character long`,
+          `News category name should be at least ${MINIMUM_NAME_LENGTH} character long`,
         );
       }
 
-      if (dto.news_category_description.length < MINIMUM_DESC_LENGTH) {
+      if (dto.description.length < MINIMUM_DESC_LENGTH) {
         throw new BadRequestException(
-          `news description should be at least ${MINIMUM_DESC_LENGTH} character long`,
+          `News description should be at least ${MINIMUM_DESC_LENGTH} characters long`,
         );
       }
 
-      saveData = await this.newsCategoryRepository.create({
-        newsCategoryName: dto.news_category_name,
-        newsCategoryDescription: dto.news_category_description,
-        aliasCode: dto.alias_code,
+      const createData = this.newsCategoryRepository.create({
+        name: dto.name,
+        description: dto.description,
+        ...(dto.aliasCode && { aliasCode: dto.aliasCode }),
       });
 
-      await this.newsCategoryRepository.save(saveData);
+      await this.newsCategoryRepository.save(createData);
       message = 'News Category Created';
     }
 
     const updatedNewsCategory = await this.newsCategoryRepository.findOne({
       where: {
-        aliasCode: dto.alias_code,
+        alias_code: dto.aliasCode,
       },
     });
 
     return { message: message, data: updatedNewsCategory };
   }
 
-  async getAllNewsCategory() {
-    const getAll = await this.newsCategoryRepository
-      .createQueryBuilder('news_category')
-      .orderBy('LOWER(news_category.news_category_name)', 'ASC')
-      .getMany();
+  async findAllNewsCategories() {
+    const allCategories = await this.newsCategoryRepository.find({
+      order: {
+        name: 'ASC',
+      },
+    });
 
-    if (!getAll) {
-      throw new Error('Error Get News Category');
+    if (!allCategories) {
+      throw new Error('Error retrieving news categories');
     }
 
-    return getAll;
+    return allCategories;
   }
 
   async findOne(id: string) {

@@ -1,10 +1,10 @@
 import { UserRole } from 'src/common/enum/enum';
+import { EventCommentsEntity } from 'src/modules/education-events/entities/event-comments.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -61,16 +61,16 @@ export class UserEntity {
   @Column({
     name: 'file_path',
     nullable: true,
-    type: 'varchar'
+    type: 'varchar',
   })
-  file_path: string
+  file_path: string;
 
   @Column({
     name: 'file_name',
     nullable: true,
-    type: 'varchar'
+    type: 'varchar',
   })
-  file_name: string
+  file_name: string;
 
   @Column({
     name: 'created_at',
@@ -86,19 +86,29 @@ export class UserEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-//   @Column({
-//     name: 'counter_id',
-//     nullable: true,
-//     type: 'uuid',
-//   })
-//   counter_id : string
+  @OneToMany(
+    () => EventCommentsEntity,
+    (eventComments) => eventComments.educationEvent,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  comments: EventCommentsEntity[];
 
-//   @OneToOne(() => CounterEntity, (counter) => counter.id_counter,
-//   {
-//     onDelete: 'CASCADE',
-//     onUpdate: 'CASCADE',
-//   }
-//   )
-//   @JoinColumn({ name: 'counter_id', referencedColumnName: 'id_counter', foreignKeyConstraintName: 'fk_user_counter'})
-//   counter: CounterEntity;
+  //   @Column({
+  //     name: 'counter_id',
+  //     nullable: true,
+  //     type: 'uuid',
+  //   })
+  //   counter_id : string
+
+  //   @OneToOne(() => CounterEntity, (counter) => counter.id_counter,
+  //   {
+  //     onDelete: 'CASCADE',
+  //     onUpdate: 'CASCADE',
+  //   }
+  //   )
+  //   @JoinColumn({ name: 'counter_id', referencedColumnName: 'id_counter', foreignKeyConstraintName: 'fk_user_counter'})
+  //   counter: CounterEntity;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DtoOutAuth, LoginDto } from './dto/auth.dto';
@@ -15,10 +15,11 @@ export class AuthController {
     summary: 'Login user',
     description: 'Login in for an user and requests from the frontend.',
   })
-  async login(
-    @Body() dto: LoginDto,
-  ) {
-    const {token, user} = await this.authService.login(dto.email, dto.password);
+  async login(@Body() dto: LoginDto) {
+    const { token, user } = await this.authService.login(
+      dto.email,
+      dto.password,
+    );
 
     const response: DtoOutAuth = {
       token,
@@ -28,4 +29,3 @@ export class AuthController {
     return new BaseDto('Succesfully Login', response);
   }
 }
-

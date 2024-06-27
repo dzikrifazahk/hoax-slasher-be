@@ -1,23 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import {
-  CreateUserDtoIn,
-  CreateUserDtoOut,
-} from './dto/create-user.dto';
+import { BadRequestException } from '@nestjs/common';
+import { CreateUserDtoIn, CreateUserDtoOut } from './dto/create-user.dto';
 import { UpdateDtoOutput } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { PasswordHash } from 'src/security/password-hash';
 import * as path from 'path';
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 
 const REF_USER_IMAGE = 'user-image';
 
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-    private password: PasswordHash,
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly password: PasswordHash,
   ) {}
   async createUser(
     dto: CreateUserDtoIn,
@@ -94,13 +91,35 @@ export class UsersService {
     return { userId: newUser.id };
   }
 
-  async findOne(email: string): Promise<UserEntity | undefined> {
-    return this.userRepository.findOne({
+  async findOne(id: string) {
+    const foundUser = await this.userRepository.findOne({
       where: {
-        email,
+        id: id,
       },
       // relations: ['counter'],
     });
+
+    console.log('ketemu ga', foundUser);
+
+    if (!foundUser) {
+      return null;
+    }
+
+    return foundUser;
+  }
+
+  async findOneByEmail(email: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!foundUser) {
+      throw new Error('User not found');
+    }
+
+    return foundUser;
   }
 
   async getUsers() {
@@ -225,5 +244,4 @@ export class UsersService {
       },
     });
   }
-  
 }

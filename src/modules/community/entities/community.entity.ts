@@ -1,6 +1,5 @@
 import { CommonColumn } from 'src/common/column/common-column';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { CommunityCategoryEntity } from './community-category.entity';
 import { CommunityStatus } from 'src/common/enum/enum';
 
 @Entity({ name: 'community' })
@@ -9,39 +8,37 @@ export class CommunityEntity extends CommonColumn {
   id: string;
 
   @Column({
-    name: 'community_name',
+    name: 'name',
     type: 'varchar',
-    length: 255,
+    length: 100,
   })
-  communityName: string;
+  name: string;
 
   @Column({
-    name: 'community_description',
+    name: 'description',
     type: 'text',
+    nullable: true
   })
-  communityDescription: string;
+  description: string;
 
   @Column({
-    name: 'community_status',
+    name: 'status',
     type: 'varchar',
     default: CommunityStatus.ACTIVE
   })
-  communityStatus: string;
+  status: string;
 
   @Column({
-    name: 'community_address',
+    name: 'address',
     type: 'varchar',
+    nullable: true
   })
-  communityAddress: string;
+  address: string;
 
   @Column({
-    name: 'community_category_id',
-    type: 'uuid',
-    nullable: true,
+    name: 'leader',
+    type: 'varchar',
+    nullable: true
   })
-  community_category_id: string;
-
-  @ManyToOne(() => CommunityCategoryEntity, (community_category) => community_category.community)
-  @JoinColumn({ name: 'community_category_id' })
-  communityCategory: CommunityCategoryEntity;
+  leader: string;
 }
