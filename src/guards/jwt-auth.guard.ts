@@ -19,7 +19,9 @@ export class JwtAuthGuard implements CanActivate {
 
     if (token) {
       try {
-        const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET }) as TokenPayload;
+        const decoded = this.jwtService.verify(token, {
+          secret: process.env.JWT_SECRET,
+        }) as TokenPayload;
         request.user = decoded;
         return true;
       } catch (err) {
@@ -31,5 +33,3 @@ export class JwtAuthGuard implements CanActivate {
     return false;
   }
 }
-
-
