@@ -1,4 +1,4 @@
-import { AdminConfig } from "./admin.config";
+import { AdminConfig } from './admin.config';
 
 export default () => ({
   admin: {

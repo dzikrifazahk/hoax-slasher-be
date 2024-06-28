@@ -88,11 +88,8 @@ export class UserEntity {
 
   @OneToMany(
     () => EventCommentsEntity,
-    (eventComments) => eventComments.educationEvent,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
+    (eventComments) => eventComments.user, // Adjust this according to the inverse relation in EventCommentsEntity
+    { cascade: true, onDelete: 'CASCADE' },
   )
   comments: EventCommentsEntity[];
 

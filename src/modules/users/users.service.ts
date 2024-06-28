@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { PasswordHash } from 'src/security/password-hash';
 import * as path from 'path';
-import fs from 'fs-extra';
+const fs = require('fs-extra');
 
 const REF_USER_IMAGE = 'user-image';
 
@@ -69,13 +69,13 @@ export class UsersService {
 
       await fs.promises.writeFile(filePath, buffer);
 
-      newUser = await this.userRepository.create({
+      newUser = this.userRepository.create({
         name: dto.name,
         email: dto.email,
         password: encryptedPassword,
         role: dto.role,
-        file_path: file.path,
-        file_name: file.originalname,
+        file_path: filePath,
+        file_name: fileName,
       });
     } else {
       newUser = this.userRepository.create({
@@ -98,8 +98,6 @@ export class UsersService {
       },
       // relations: ['counter'],
     });
-
-    console.log('ketemu ga', foundUser);
 
     if (!foundUser) {
       return null;
