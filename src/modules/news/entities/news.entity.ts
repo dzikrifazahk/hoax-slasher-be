@@ -46,7 +46,7 @@ export class NewsEntity extends CommonColumn {
 
   @Column({
     name: 'publish_date',
-    type: 'varchar',
+    type: 'timestamp',
     nullable: true,
   })
   publish_date: Date;
