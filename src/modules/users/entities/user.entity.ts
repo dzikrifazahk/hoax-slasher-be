@@ -1,5 +1,6 @@
 import { UserRole } from 'src/common/enum/enum';
 import { EventCommentsEntity } from 'src/modules/education-events/entities/event-comments.entity';
+import { EventRegisterEntity } from 'src/modules/education-events/entities/event-register.entity';
 import {
   Column,
   CreateDateColumn,
@@ -93,6 +94,12 @@ export class UserEntity {
   )
   comments: EventCommentsEntity[];
 
+  @OneToMany(
+    () => EventRegisterEntity,
+    (eventComments) => eventComments.user, // Adjust this according to the inverse relation in EventCommentsEntity
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  eventRegister: EventCommentsEntity[];
   //   @Column({
   //     name: 'counter_id',
   //     nullable: true,

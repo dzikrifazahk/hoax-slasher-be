@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from 'src/common/enum/enum';
 
 export class CreateUserDtoIn {
@@ -31,19 +31,8 @@ export class CreateUserDtoIn {
   })
   role: UserRole;
 
-  @ApiProperty({
-    type: String,
-    nullable: true,
-    example: 'user/folder',
-  })
-  filePath?: string;
-
-  @ApiProperty({
-    type: String,
-    nullable: true,
-    example: 'user/file.png',
-  })
-  fileName?: string;
+  @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
+  file?: any;
 }
 
 export class CreateUserNonAuthDtoIn {

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { PasswordHash } from 'src/security/password-hash';
 import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
 
 const REF_USER_IMAGE = 'user-image';

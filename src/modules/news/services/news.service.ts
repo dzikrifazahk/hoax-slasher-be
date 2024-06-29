@@ -2,12 +2,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { NewsEntity } from '../entities/news.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateNewsDtoIn } from '../dto/news.dto';
-import { NewsLabel } from 'src/common/enum/enum';
-const { Op } = require('sequelize');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
 const REF_IMAGE = 'news';
 import * as path from 'path';
 import { NewsCategoryEntity } from '../entities/news-category.entity';
+import { NotFoundException } from '@nestjs/common';
 
 export class NewsService {
   constructor(
@@ -18,79 +18,187 @@ export class NewsService {
   ) {}
 
   async create(dto: CreateNewsDtoIn, file?: Express.Multer.File) {
-    //   let newsCreate: NewsEntity;
-    //   if (file) {
-    //     const { originalname, buffer } = file;
-    //     const uploadDirectory = process.env.UPLOADS_DIRECTORY;
-    //     const trimmed = originalname.trim();
-    //     if (!uploadDirectory) {
-    //       throw new Error('uploads directory not found');
-    //     }
-    //     // console.log('uploadDirectory', uploadDirectory);
-    //     const fileName = `${Math.floor(Date.now() / 1000)}-${trimmed}`;
-    //     //  console.log('uploadDirectory', uploadDirectory);
-    //     const correctedPath = uploadDirectory.replace(/\\\\/g, '/');
-    //     //  console.log('corrected Path', correctedPath);
-    //     const correctedPath2 = correctedPath.replace(/\\/g, '/');
-    //     //  console.log('Corrected Path2', correctedPath2);
-    //     //  const filePath = path.join(correctedPath2, REF_ATTACHMENT, fileName);
-    //     const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
-    //     // console.log('File Path : ', filePath);
-    //     await fs.ensureDir(path.dirname(filePath));
-    //     await fs.promises.writeFile(filePath, buffer);
-    //     // Create the data entry linked to the uploaded file
-    //     newsCreate = this.news.create({
-    //       newsTitle: dto.news_title,
-    //       newsDescription: dto.news_description,
-    //       newsAuthor: dto.news_author,
-    //       newsSource: dto.news_source,
-    //       newsPublishDate: dto.news_publish_date,
-    //       newsCategoryId: dto.news_category_id,
-    //       fileName: fileName,
-    //       filePath: filePath,
-    //     });
-    //   } else {
-    //     newsCreate = this.news.create({
-    //       newsTitle: dto.news_title,
-    //       newsDescription: dto.news_description,
-    //       newsAuthor: dto.news_author,
-    //       newsSource: dto.news_source,
-    //       newsPublishDate: dto.news_publish_date,
-    //       newsCategoryId: dto.news_category_id,
-    //     });
-    //   }
-    //   await this.news.save(newsCreate);
-    //   return { news: newsCreate.id };
-    // }
-    // async update(id: string, dto: CreateNewsDtoIn) {
-    //   const find = await this.news.findOne({
-    //     where: {
-    //       id: id,
-    //     },
-    //   });
-    //   if (dto.news_title) {
-    //     find.news_title = dto.news_title;
-    //   }
-    //   if (dto.news_description) {
-    //     find.newsDescription = dto.news_description;
-    //   }
-    //   if (dto.news_author) {
-    //     find.newsAuthor = dto.news_author;
-    //   }
-    //   if (dto.news_source) {
-    //     find.newsSource = dto.news_source;
-    //   }
-    //   if (dto.news_publish_date) {
-    //     find.newsPublishDate = dto.news_publish_date;
-    //   }
-    //   if (dto.news_category_id) {
-    //     find.newsCategoryId = dto.news_category_id;
-    //   }
-    //   find.updatedAt = new Date();
-    //   find.label = NewsLabel.NOT_TRAINED;
-    //   find.isTraining = false;
-    //   await this.news.save(find);
-    //   return find;
+    let message: string;
+    console.log(dto);
+    if (!dto.id) {
+      if (file) {
+        const { originalname, buffer } = file;
+        const uploadDirectory = process.env.UPLOADS_DIRECTORY;
+        const trimmed = originalname.trim();
+        if (!uploadDirectory) {
+          throw new Error('uploads directory not found');
+        }
+        const fileName = `${Math.floor(Date.now() / 1000)}-${trimmed}`;
+        const correctedPath = uploadDirectory.replace(/\\\\/g, '/');
+        const correctedPath2 = correctedPath.replace(/\\/g, '/');
+        const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.promises.writeFile(filePath, buffer);
+        const createdData = this.news.create({
+          ...(dto.title && { title: dto.title }),
+          ...(dto.description && { description: dto.description }),
+          ...(dto.author && { author: dto.author }),
+          ...(dto.source && { source: dto.source }),
+          ...(dto.publishDate && { publish_date: dto.publishDate }),
+          ...(dto.newsKeywords && { news_keywords: dto.newsKeywords }),
+          ...(dto.isTraining && { is_training: dto.isTraining }),
+          ...(dto.trainingDate && { training_date: dto.trainingDate }),
+          ...(dto.label && { label: dto.label }),
+          ...(dto.location && { location: dto.location }),
+          ...(dto.newsCategoryId && { news_category_id: dto.newsCategoryId }),
+          ...(dto.url && { url: dto.url }),
+          ...(dto.urlRequestId && { url_request_id: dto.urlRequestId }),
+          file_name: fileName,
+          file_path: filePath,
+        });
+        await this.news.save(createdData);
+        message = 'News Created With Image';
+
+        return { message: message, data: createdData };
+      } else {
+        const createdData = this.news.create({
+          ...(dto.title && { title: dto.title }),
+          ...(dto.description && { description: dto.description }),
+          ...(dto.author && { author: dto.author }),
+          ...(dto.source && { source: dto.source }),
+          ...(dto.publishDate && { publish_date: dto.publishDate }),
+          ...(dto.newsKeywords && { news_keywords: dto.newsKeywords }),
+          ...(dto.isTraining && { is_training: dto.isTraining }),
+          ...(dto.trainingDate && { training_date: dto.trainingDate }),
+          ...(dto.label && { label: dto.label }),
+          ...(dto.location && { location: dto.location }),
+          ...(dto.newsCategoryId && { news_category_id: dto.newsCategoryId }),
+          ...(dto.url && { url: dto.url }),
+          ...(dto.urlRequestId && { url_request_id: dto.urlRequestId }),
+        });
+        await this.news.save(createdData);
+        message = 'News Created Without Image';
+
+        return { message: message, data: createdData };
+      }
+    } else {
+      const foundNews = await this.news.findOne({
+        where: {
+          id: dto.id,
+        },
+      });
+
+      if (!foundNews) {
+        throw new NotFoundException('News Not Found');
+      }
+
+      if (file) {
+        const { originalname, buffer } = file;
+        const uploadDirectory = process.env.UPLOADS_DIRECTORY;
+        const trimmed = originalname.trim();
+        if (!uploadDirectory) {
+          throw new Error('uploads directory not found');
+        }
+        const fileName = `${Math.floor(Date.now() / 1000)}-${trimmed}`;
+        const correctedPath = uploadDirectory.replace(/\\\\/g, '/');
+        const correctedPath2 = correctedPath.replace(/\\/g, '/');
+        const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.promises.writeFile(filePath, buffer);
+        if (dto.title) {
+          foundNews.title = dto.title;
+        }
+        if (dto.description) {
+          foundNews.description = dto.description;
+        }
+        if (dto.author) {
+          foundNews.author = dto.author;
+        }
+        if (dto.source) {
+          foundNews.source = dto.source;
+        }
+        if (dto.publishDate) {
+          foundNews.publish_date = dto.publishDate;
+        }
+        if (dto.newsKeywords) {
+          foundNews.news_keywords = dto.newsKeywords;
+        }
+        if (dto.isTraining) {
+          foundNews.is_training = dto.isTraining;
+        }
+        if (dto.trainingDate) {
+          foundNews.training_date = dto.trainingDate;
+        }
+        if (dto.label) {
+          foundNews.label = dto.label;
+        }
+        if (dto.location) {
+          foundNews.location = dto.location;
+        }
+        if (dto.newsCategoryId) {
+          foundNews.news_category_id = dto.newsCategoryId;
+        }
+        if (dto.url) {
+          foundNews.url = dto.url;
+        }
+        if (dto.urlRequestId) {
+          foundNews.url_request_id = dto.urlRequestId;
+        }
+
+        foundNews.file_name = fileName;
+        foundNews.file_path = filePath;
+        foundNews.updatedAt = new Date();
+
+        await this.news.save(foundNews);
+        message = 'News Updated With Image';
+      } else {
+        if (dto.title) {
+          foundNews.title = dto.title;
+        }
+        if (dto.description) {
+          foundNews.description = dto.description;
+        }
+        if (dto.author) {
+          foundNews.author = dto.author;
+        }
+        if (dto.source) {
+          foundNews.source = dto.source;
+        }
+        if (dto.publishDate) {
+          foundNews.publish_date = dto.publishDate;
+        }
+        if (dto.newsKeywords) {
+          foundNews.news_keywords = dto.newsKeywords;
+        }
+        if (dto.isTraining) {
+          foundNews.is_training = dto.isTraining;
+        }
+        if (dto.trainingDate) {
+          foundNews.training_date = dto.trainingDate;
+        }
+        if (dto.label) {
+          foundNews.label = dto.label;
+        }
+        if (dto.location) {
+          foundNews.location = dto.location;
+        }
+        if (dto.newsCategoryId) {
+          foundNews.news_category_id = dto.newsCategoryId;
+        }
+        if (dto.url) {
+          foundNews.url = dto.url;
+        }
+        if (dto.urlRequestId) {
+          foundNews.url_request_id = dto.urlRequestId;
+        }
+
+        foundNews.updatedAt = new Date();
+        await this.news.save(foundNews);
+        message = 'News Updated Without Image';
+      }
+      return { message: message, data: foundNews };
+    }
+  }
+
+  async sendUrl() {
+    return {
+      url: process.env.UPLOADS_DIRECTORY,
+    };
   }
 
   async findAll() {
@@ -102,24 +210,25 @@ export class NewsService {
     });
 
     if (!getAll) {
-      throw new Error('Error Get News Not Labeled');
+      throw new NotFoundException('News Not Found');
     }
 
     return getAll;
   }
 
   async findOne(id: string) {
-    const findNewsNotLabeled = await this.news.findOne({
+    const foundNews = await this.news.findOne({
       where: {
         id: id,
       },
+      relations: ['newsCategory'],
     });
 
-    if (!findNewsNotLabeled) {
-      throw new Error('Error Get News Not Labeled');
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
     }
 
-    return findNewsNotLabeled;
+    return foundNews;
   }
 
   async search(title?: string, desc?: string, id_category?: string) {
@@ -168,20 +277,20 @@ export class NewsService {
   }
 
   async delete(id: string) {
-    const findNewsNotLabeled = await this.news.findOne({
+    const foundNews = await this.news.findOne({
       where: {
         id: id,
       },
     });
 
-    if (!findNewsNotLabeled) {
-      throw new Error('Error Get News Not Labeled or Nothing');
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
     }
 
     await this.news.delete({
       id: id,
     });
 
-    return findNewsNotLabeled;
+    return foundNews;
   }
 }

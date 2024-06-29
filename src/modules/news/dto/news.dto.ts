@@ -1,67 +1,114 @@
-import { ApiOAuth2, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsDate,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateNewsDtoIn {
-  @ApiProperty({
+  @ApiPropertyOptional({
+    type: String,
+    example: 'a0b0b5f9-7c4c-4d4c-8d8c-8d8c8d8c8d8c',
+  })
+  @IsUUID()
+  @IsOptional()
+  id?: string;
+
+  @ApiPropertyOptional({
     type: String,
     example: 'News Title',
   })
-  news_title: string;
+  @IsString()
+  title?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'News Description',
   })
-  news_description: string;
+  @IsString()
+  description?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'Dzikri Faza',
   })
+  @IsString()
   author: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'Narasi',
   })
-  source: string;
+  @IsString()
+  source?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Date,
     example: '2023-11-28 19:30:43.934129',
   })
-  publish_date: Date;
+  @IsDate()
+  publishDate?: Date;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'Mengadakan, Berita, Alkaline',
   })
-  news_keywords: string;
-  
-  @ApiProperty({
+  @IsString()
+  newsKeywords?: string;
+
+  @ApiPropertyOptional({
+    type: Boolean,
+    example: false,
+  })
+  @IsBoolean()
+  isTraining?: boolean;
+
+  @ApiPropertyOptional({
+    type: Date,
+    example: '2023-11-28 19:30:43.934129',
+  })
+  @IsDate()
+  trainingDate?: Date;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'NOT TRAINED | HOAX | AKTUAL',
+  })
+  @IsString()
+  label?: string;
+
+  @ApiPropertyOptional({
     type: String,
     example: 'Bandung',
   })
-  location: string;
+  @IsString()
+  location?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: '3c143ad2-6d70-4053-a0ae-82311b7a9d6a',
   })
-  news_category_id: string;
+  @IsString()
+  newsCategoryId?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
-    example: 'file.jpg',
-    nullable: true
+    example: 'https://narasi.tv/read/narasi-daily/harga-gift-tiktok',
   })
-  file_name?: string;
+  @IsString()
+  url?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
-    example: 'user/src/sss',
-    nullable: true
+    example: '3c143ad2-6d70-4053-a0ae-82311b7a9d6a',
   })
-  file_path?: string;
+  @IsString()
+  urlRequestId?: string;
+
+  @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
+  file?: any;
 }
 
 export class UpdateNewsDtoIn {
@@ -100,22 +147,21 @@ export class SearchNewsDto {
   @ApiPropertyOptional({
     type: String,
     example: 'News Title',
-    nullable: true
+    nullable: true,
   })
   news_title?: string;
 
   @ApiPropertyOptional({
     type: String,
     example: 'News Description',
-    nullable: true
+    nullable: true,
   })
   news_description?: string;
 
   @ApiPropertyOptional({
     type: String,
     example: 'id',
-    nullable: true
+    nullable: true,
   })
   newsCategory?: string;
-
 }

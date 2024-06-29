@@ -7,10 +7,15 @@ import { EventCommentsEntity } from './entities/event-comments.entity';
 import { JwtService } from '@nestjs/jwt';
 import { EventsCommentsController } from './controller/event-comments.controller';
 import { EventCommentsService } from './services/event-comments.service';
+import { EventRegisterEntity } from './entities/event-register.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EducationEventEntity, EventCommentsEntity]),
+    TypeOrmModule.forFeature([
+      EducationEventEntity,
+      EventCommentsEntity,
+      EventRegisterEntity,
+    ]),
   ],
   controllers: [EducationEventsController, EventsCommentsController],
   providers: [EducationEventsService, JwtService, EventCommentsService],

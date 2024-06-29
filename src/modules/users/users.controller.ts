@@ -17,6 +17,7 @@ import { UsersService } from './users.service';
 import { CreateUserDtoIn, CreateUserDtoOut } from './dto/create-user.dto';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -41,6 +42,7 @@ export class UsersController {
   @ApiResponse({
     type: CreateUserDtoOut,
   })
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body() dto: CreateUserDtoIn,
@@ -55,7 +57,7 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    return this.usersService.createUser(dto, file);
+    return await this.usersService.createUser(dto, file);
   }
 
   @Get('/')

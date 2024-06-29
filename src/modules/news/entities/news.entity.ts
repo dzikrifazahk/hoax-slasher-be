@@ -17,18 +17,18 @@ export class NewsEntity extends CommonColumn {
   id: string;
 
   @Column({
-    name: 'news_title',
+    name: 'title',
     type: 'varchar',
     nullable: true,
   })
-  news_title: string;
+  title: string;
 
   @Column({
-    name: 'news_description',
+    name: 'description',
     type: 'varchar',
     nullable: true,
   })
-  news_descriptioin: string;
+  description: string;
 
   @Column({
     name: 'author',
@@ -67,7 +67,7 @@ export class NewsEntity extends CommonColumn {
 
   @Column({
     name: 'training_date',
-    type: 'boolean',
+    type: 'timestamp',
     nullable: true,
   })
   training_date: Date;
@@ -94,11 +94,18 @@ export class NewsEntity extends CommonColumn {
   validated_date: Date;
 
   @Column({
-    name: 'file_name',
+    name: 'url',
     type: 'varchar',
     nullable: true,
   })
   url: string;
+
+  @Column({
+    name: 'url_request_id',
+    type: 'varchar',
+    nullable: true,
+  })
+  url_request_id: string;
 
   @Column({
     name: 'is_debunking',
@@ -137,6 +144,7 @@ export class NewsEntity extends CommonColumn {
 
   @ManyToOne(() => NewsCategoryEntity, {
     onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
     name: 'news_category_id',

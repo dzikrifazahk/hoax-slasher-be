@@ -3,16 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  CreateOrUpdateCommunityDtoIn,
-  UpdateCommunityDto,
-} from '../dto/community.dto';
+import { CreateOrUpdateCommunityDtoIn } from '../dto/community.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from '../entities/community.entity';
-import { ILike, Repository } from 'typeorm';
-import { CommunityStatus } from 'src/common/enum/enum';
 import { UsersService } from 'src/modules/users/users.service';
 import { validate as isUUID } from 'uuid';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CommunityService {
@@ -36,7 +32,7 @@ export class CommunityService {
       : null;
 
     console.log('ketemu', foundCommunity);
-    
+
     if (dto.leader && !isUUID(dto.leader)) {
       throw new BadRequestException('Leader must be a valid UUID');
     }
@@ -100,7 +96,7 @@ export class CommunityService {
 
     const finalData = await Promise.all(
       communities.map(async (community) => {
-        let fixedLeaderData: Object;
+        let fixedLeaderData: object;
 
         if (community.leader != null) {
           const leader = await this.usersService.findOne(community.leader);
@@ -126,7 +122,7 @@ export class CommunityService {
   }
 
   async findOne(id: string) {
-    let leaderData: Object;
+    let leaderData: object;
 
     const foundCommunity = await this.communityRepository.findOne({
       where: { id: id },
