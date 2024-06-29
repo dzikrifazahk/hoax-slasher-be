@@ -25,7 +25,7 @@ export class NewsEntity extends CommonColumn {
 
   @Column({
     name: 'description',
-    type: 'varchar',
+    type: 'text',
     nullable: true,
   })
   description: string;

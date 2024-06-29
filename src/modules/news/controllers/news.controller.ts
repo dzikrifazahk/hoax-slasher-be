@@ -10,6 +10,7 @@ import {
   FileTypeValidator,
   UseInterceptors,
   Param,
+  Query,
 } from '@nestjs/common';
 import { NewsService } from '../services/news.service';
 import {
@@ -18,7 +19,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateNewsDtoIn } from '../dto/news.dto';
+import {
+  CreateNewsDtoIn,
+  SearchNewsDto,
+  UpdateUrlRequestDtoIn,
+} from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -50,7 +55,7 @@ export class NewsController {
     )
     file?: Express.Multer.File,
   ) {
-    const data = await this.newsService.create(dto, file);
+    const data = await this.newsService.createOrUpdate(dto, file);
     return new BaseDto(data.message, data.data);
   }
 
@@ -68,24 +73,37 @@ export class NewsController {
     return new BaseDto('Success Get All News', getAll);
   }
 
-  // @Get('/search')
-  // @ApiOperation({
-  //   summary: 'Get all news not labeled',
-  //   description: 'Get all news not labeled',
-  // })
-  // @ApiResponse({
-  //   type: CreateNewsDtoIn,
-  // })
-  // async search(@Query() dto: SearchNewsDto) {
-  //   // TODO: implement searching functionality
-  //   const search = await this.newsService.search(
-  //     dto.news_title,
-  //     dto.news_description,
-  //     dto.newsCategory,
-  //   );
+  @Get('/search')
+  @ApiOperation({
+    summary: 'Get all news not labeled',
+    description: 'Get all news not labeled',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async search(@Query() dto: SearchNewsDto) {
+    // TODO: implement searching functionality
+    const search = await this.newsService.search(
+      dto.news_title,
+      dto.news_description,
+      dto.newsCategory,
+    );
 
-  //   return new BaseDto('Success Get All News', search);
-  // }
+    return new BaseDto('Success Get All News', search);
+  }
+
+  @Post('/updateWithUrlRequest')
+  @ApiOperation({
+    summary: 'Update news with url request',
+    description: 'Update news with url request',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async updateWithUrlRequest(@Body() dto: UpdateUrlRequestDtoIn) {
+    const data = await this.newsService.updateWithUrlRequest(dto);
+    return new BaseDto(data.message, data.data);
+  }
 
   @Get(':id')
   @ApiOperation({

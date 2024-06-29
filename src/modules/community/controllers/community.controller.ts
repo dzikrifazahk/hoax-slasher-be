@@ -1,10 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CommunityService } from '../services/community.service';
-import { CreateOrUpdateCommunityDtoIn, UpdateCommunityDto } from '../dto/community.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDtoIn, CreateUserDtoOut } from 'src/modules/users/dto/create-user.dto';
+import { CreateOrUpdateCommunityDtoIn } from '../dto/community.dto';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateUserDtoOut } from 'src/modules/users/dto/create-user.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Community')
 @Controller('community')
@@ -14,6 +34,7 @@ export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
   @Post('/createOrUpdate')
+  @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: '** Create Or Update ** (ATTENTION PLEASE READ DESCRIPTION)',
     description:
@@ -24,9 +45,23 @@ export class CommunityController {
     description: 'The record has been successfully created.',
     type: CreateUserDtoOut,
   })
-  async create(@Body() dto: CreateOrUpdateCommunityDtoIn) {
-    const data = await this.communityService.createOrUpdate(dto);
-    return new BaseDto(data.message, data.community);
+  @ApiConsumes('multipart/form-data')
+  async create(
+    @Body() dto: CreateOrUpdateCommunityDtoIn,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5242880 }), // 5MB (5 * 1024 * 1024)
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ }),
+        ],
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    console.log('.ini', dto);
+    const data = await this.communityService.createOrUpdate(dto, file);
+    return new BaseDto(data.message, data.data);
   }
 
   @Get('/')
@@ -37,7 +72,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Get all community',
-    type: CreateOrUpdateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn,
   })
   async findAll() {
     const getAll = await this.communityService.getAll();
@@ -52,7 +87,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Get one community',
-    type: CreateOrUpdateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn,
   })
   async findOne(@Param('id') id: string) {
     const getOne = await this.communityService.findOne(id);
@@ -67,7 +102,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Delete one community',
-    type: CreateOrUpdateCommunityDtoIn
+    type: CreateOrUpdateCommunityDtoIn,
   })
   async remove(@Param('id') id: string) {
     const deleteData = await this.communityService.remove(id);

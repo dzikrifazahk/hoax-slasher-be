@@ -9,6 +9,10 @@ import { CommunityEntity } from '../entities/community.entity';
 import { UsersService } from 'src/modules/users/users.service';
 import { validate as isUUID } from 'uuid';
 import { Repository } from 'typeorm';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs-extra');
+const REF_IMAGE = 'community';
+import * as path from 'path';
 
 @Injectable()
 export class CommunityService {
@@ -18,9 +22,10 @@ export class CommunityService {
     private readonly usersService: UsersService,
   ) {}
 
-  async createOrUpdate(dto: CreateOrUpdateCommunityDtoIn) {
-    const MINIMUM_NAME_LENGTH = 2;
-    const MINIMUM_DESCRIPTION_LENGTH = 3;
+  async createOrUpdate(
+    dto: CreateOrUpdateCommunityDtoIn,
+    file?: Express.Multer.File,
+  ) {
     let message: string;
 
     const foundCommunity = dto.id
@@ -31,37 +36,72 @@ export class CommunityService {
         })
       : null;
 
-    console.log('ketemu', foundCommunity);
+    console.log('ketemu', dto);
 
     if (dto.leader && !isUUID(dto.leader)) {
       throw new BadRequestException('Leader must be a valid UUID');
     }
 
-    if (dto.name.length < MINIMUM_NAME_LENGTH) {
-      throw new BadRequestException(
-        `community name should be at least ${MINIMUM_NAME_LENGTH} character long`,
-      );
-    }
+    if (foundCommunity === null) {
+      if (file) {
+        const { originalname, buffer } = file;
+        const uploadDirectory = process.env.UPLOADS_DIRECTORY;
+        const trimmed = originalname.trim();
+        if (!uploadDirectory) {
+          throw new Error('uploads directory not found');
+        }
+        const fileName = `${Math.floor(Date.now() / 1000)}-${trimmed}`;
+        const correctedPath = uploadDirectory.replace(/\\\\/g, '/');
+        const correctedPath2 = correctedPath.replace(/\\/g, '/');
+        const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.promises.writeFile(filePath, buffer);
 
-    if (dto.description.length < MINIMUM_DESCRIPTION_LENGTH) {
-      throw new BadRequestException(
-        `community description should be at least ${MINIMUM_DESCRIPTION_LENGTH} character long`,
-      );
-    }
+        const newCommunity = this.communityRepository.create({
+          name: dto.name,
+          description: dto.description,
+          address: dto.address,
+          leader: dto.leader,
+          file_name: fileName,
+          file_path: filePath,
+        });
 
-    if (!foundCommunity) {
-      const newCommunity = this.communityRepository.create({
-        name: dto.name,
-        ...(dto.description && { description: dto.description }),
-        ...(dto.address && { address: dto.address }),
-        ...(dto.leader && { leader: dto.leader }),
-      });
-      await this.communityRepository.save(newCommunity);
+        await this.communityRepository.save(newCommunity);
+        message = 'Success Create With Image';
 
-      message = 'Success Create Community';
+        return { data: newCommunity, message: message };
+      } else {
+        const newCommunity = this.communityRepository.create({
+          name: dto.name,
+          ...(dto.description && { description: dto.description }),
+          ...(dto.address && { address: dto.address }),
+          ...(dto.leader && { leader: dto.leader }),
+        });
+        await this.communityRepository.save(newCommunity);
 
-      return { community: newCommunity, message: message };
+        message = 'Success Create Without Community';
+
+        return { data: newCommunity, message: message };
+      }
     } else {
+      if (file) {
+        const { originalname, buffer } = file;
+        const uploadDirectory = process.env.UPLOADS_DIRECTORY;
+        const trimmed = originalname.trim();
+        if (!uploadDirectory) {
+          throw new Error('uploads directory not found');
+        }
+        const fileName = `${Math.floor(Date.now() / 1000)}-${trimmed}`;
+        const correctedPath = uploadDirectory.replace(/\\\\/g, '/');
+        const correctedPath2 = correctedPath.replace(/\\/g, '/');
+        const filePath = correctedPath2 + '/' + REF_IMAGE + '/' + fileName;
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.promises.writeFile(filePath, buffer);
+
+        foundCommunity.file_name = fileName;
+        foundCommunity.file_path = filePath;
+      }
+
       if (dto.name) {
         foundCommunity.name = dto.name;
       }
@@ -79,7 +119,7 @@ export class CommunityService {
 
       message = 'Success Update Community';
 
-      return { community: foundCommunity, message: message };
+      return { data: foundCommunity, message: message };
     }
   }
 

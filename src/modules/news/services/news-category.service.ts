@@ -23,8 +23,6 @@ export class NewsCategoryService {
         })
       : null;
 
-    console.log('findNewsCategory', findNewsCategory);
-
     if (findNewsCategory) {
       if (dto.name) {
         findNewsCategory.name = dto.name;

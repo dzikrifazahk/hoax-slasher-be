@@ -1,5 +1,5 @@
 import { CommonColumn } from 'src/common/column/common-column';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { CommunityStatus } from 'src/common/enum/enum';
 
 @Entity({ name: 'community' })
@@ -17,28 +17,42 @@ export class CommunityEntity extends CommonColumn {
   @Column({
     name: 'description',
     type: 'text',
-    nullable: true
+    nullable: true,
   })
   description: string;
 
   @Column({
     name: 'status',
     type: 'varchar',
-    default: CommunityStatus.ACTIVE
+    default: CommunityStatus.ACTIVE,
   })
   status: string;
 
   @Column({
     name: 'address',
     type: 'varchar',
-    nullable: true
+    nullable: true,
   })
   address: string;
 
   @Column({
     name: 'leader',
     type: 'varchar',
-    nullable: true
+    nullable: true,
   })
   leader: string;
+
+  @Column({
+    name: 'file_name',
+    type: 'varchar',
+    nullable: true,
+  })
+  file_name: string;
+
+  @Column({
+    name: 'file_path',
+    type: 'varchar',
+    nullable: true,
+  })
+  file_path: string;
 }

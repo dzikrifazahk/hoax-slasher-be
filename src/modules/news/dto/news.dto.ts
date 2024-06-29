@@ -35,7 +35,7 @@ export class CreateNewsDtoIn {
     example: 'Dzikri Faza',
   })
   @IsString()
-  author: string;
+  author?: string;
 
   @ApiPropertyOptional({
     type: String,
@@ -164,4 +164,90 @@ export class SearchNewsDto {
     nullable: true,
   })
   newsCategory?: string;
+}
+
+export class UpdateUrlRequestDtoIn {
+  @ApiPropertyOptional({
+    type: String,
+    example: '3c143ad2-6d70-4053-a0ae-82311b7a9d6a',
+  })
+  @IsString()
+  urlRequestId?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'News Title',
+  })
+  @IsString()
+  title?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'News Description',
+  })
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Dzikri Faza',
+  })
+  @IsString()
+  author?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Narasi',
+  })
+  @IsString()
+  source?: string;
+
+  @ApiPropertyOptional({
+    type: Date,
+    example: '2023-11-28 19:30:43.934129',
+  })
+  @IsDate()
+  publishDate?: Date;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Mengadakan, Berita, Alkaline',
+  })
+  @IsString()
+  newsKeywords?: string;
+
+  @ApiPropertyOptional({
+    type: Boolean,
+    example: false,
+  })
+  @IsBoolean()
+  isTraining?: boolean;
+
+  @ApiPropertyOptional({
+    type: Date,
+    example: '2023-11-28 19:30:43.934129',
+  })
+  @IsDate()
+  trainingDate?: Date;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'NOT TRAINED | HOAX | AKTUAL',
+  })
+  @IsString()
+  label?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Bandung',
+  })
+  @IsString()
+  location?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'https://narasi.tv/read/narasi-daily/harga-gift-tiktok',
+  })
+  @IsString()
+  url?: string;
 }

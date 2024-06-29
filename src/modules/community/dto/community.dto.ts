@@ -1,8 +1,4 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  ApiRequestTimeoutResponse,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { CommunityStatus } from 'src/common/enum/enum';
 
@@ -13,7 +9,7 @@ export class CreateOrUpdateCommunityDtoIn {
   @IsOptional()
   @IsUUID()
   id?: string;
-  
+
   @ApiProperty({
     type: String,
     required: true,
@@ -43,6 +39,9 @@ export class CreateOrUpdateCommunityDtoIn {
   })
   @IsUUID()
   leader?: string;
+
+  @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
+  file?: any;
 }
 
 export class UpdateCommunityDto {

@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { NewsEntity } from '../entities/news.entity';
 import { Like, Repository } from 'typeorm';
-import { CreateNewsDtoIn } from '../dto/news.dto';
+import { CreateNewsDtoIn, UpdateUrlRequestDtoIn } from '../dto/news.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
 const REF_IMAGE = 'news';
@@ -17,7 +17,7 @@ export class NewsService {
     private readonly newsCategoryRepo: Repository<NewsCategoryEntity>,
   ) {}
 
-  async create(dto: CreateNewsDtoIn, file?: Express.Multer.File) {
+  async createOrUpdate(dto: CreateNewsDtoIn, file?: Express.Multer.File) {
     let message: string;
     console.log(dto);
     if (!dto.id) {
@@ -195,16 +195,70 @@ export class NewsService {
     }
   }
 
-  async sendUrl() {
-    return {
-      url: process.env.UPLOADS_DIRECTORY,
-    };
+  async updateWithUrlRequest(dto: UpdateUrlRequestDtoIn) {
+    let message: string;
+    console.log(dto);
+    if (!dto.urlRequestId) {
+      throw new NotFoundException('Url Request Not Found');
+    } else {
+      const foundNews = await this.news.findOne({
+        where: {
+          url_request_id: dto.urlRequestId,
+        },
+      });
+
+      if (!foundNews) {
+        throw new NotFoundException('News Not Found');
+      }
+
+      if (dto.title) {
+        foundNews.title = dto.title;
+      }
+      if (dto.description) {
+        foundNews.description = dto.description;
+      }
+      if (dto.author) {
+        foundNews.author = dto.author;
+      }
+      if (dto.source) {
+        foundNews.source = dto.source;
+      }
+      if (dto.publishDate) {
+        foundNews.publish_date = dto.publishDate;
+      }
+      if (dto.newsKeywords) {
+        foundNews.news_keywords = dto.newsKeywords;
+      }
+      if (dto.isTraining) {
+        foundNews.is_training = dto.isTraining;
+      }
+      if (dto.trainingDate) {
+        foundNews.training_date = dto.trainingDate;
+      }
+      if (dto.label) {
+        foundNews.label = dto.label;
+      }
+      if (dto.location) {
+        foundNews.location = dto.location;
+      }
+      if (dto.url) {
+        foundNews.url = dto.url;
+      }
+      if (dto.urlRequestId) {
+        foundNews.url_request_id = dto.urlRequestId;
+      }
+
+      foundNews.updatedAt = new Date();
+      await this.news.save(foundNews);
+      message = 'News Updated Without Image';
+      return { message: message, data: foundNews };
+    }
   }
 
   async findAll() {
     const getAll = await this.news.find({
       order: {
-        createdAt: 'DESC',
+        updatedAt: 'DESC',
       },
       relations: ['newsCategory'],
     });
@@ -212,7 +266,7 @@ export class NewsService {
     if (!getAll) {
       throw new NotFoundException('News Not Found');
     }
-
+    console.log('ini anu', getAll);
     return getAll;
   }
 
@@ -231,15 +285,30 @@ export class NewsService {
     return foundNews;
   }
 
+  async findByUrlRequestId(id: string) {
+    const foundNews = await this.news.find({
+      where: {
+        url_request_id: id,
+      },
+      relations: ['newsCategory'],
+    });
+
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
+    }
+
+    return foundNews;
+  }
+
   async search(title?: string, desc?: string, id_category?: string) {
     let query: any = {};
 
     if (title) {
-      query = { ...query, newsTitle: Like(`%${title}%`) };
+      query = { ...query, title: Like(`%${title}%`) };
     }
 
     if (desc) {
-      query = { ...query, newsDescription: Like(`%${desc}%`) };
+      query = { ...query, descrition: Like(`%${desc}%`) };
     }
 
     console.log('qyert', query);
@@ -256,7 +325,7 @@ export class NewsService {
         throw new Error('Category Not Found');
       }
 
-      query = { ...query, newsCategoryId: id_category };
+      query = { ...query, news_category_id: id_category };
     }
 
     const getAll = await this.news.find({

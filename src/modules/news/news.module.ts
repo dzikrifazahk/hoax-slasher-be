@@ -6,11 +6,16 @@ import { NewsCategoryService } from './services/news-category.service';
 import { NewsController } from './controllers/news.controller';
 import { NewsEntity } from './entities/news.entity';
 import { NewsService } from './services/news.service';
+import { UrlReqController } from './controllers/url-req.controller';
+import { UrlReqService } from './services/url-req.service';
+import UrlReqEntity from './entities/url-req.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NewsCategoryEntity, NewsEntity])],
-  controllers: [NewsController, NewsCategoryController],
-  providers: [NewsCategoryService, NewsService],
+  imports: [
+    TypeOrmModule.forFeature([NewsCategoryEntity, NewsEntity, UrlReqEntity]),
+  ],
+  controllers: [NewsController, NewsCategoryController, UrlReqController],
+  providers: [NewsCategoryService, NewsService, UrlReqService],
   exports: [NewsCategoryService],
 })
 export class NewsModule {}
