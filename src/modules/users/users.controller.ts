@@ -55,7 +55,7 @@ export class UsersController {
         ],
       }),
     )
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     return await this.usersService.createUser(dto, file);
   }
@@ -95,7 +95,7 @@ export class UsersController {
     type: CreateUserDtoOut,
   })
   @UseInterceptors(FileInterceptor('file'))
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateDtoOutput,
     @UploadedFile(
@@ -109,7 +109,8 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    return this.usersService.updateUser(id, dto, file);
+    const updatedata = await this.usersService.updateUser(id, dto, file);
+    return new BaseDto('Success Update user', updatedata);
   }
 
   @Delete(':id')

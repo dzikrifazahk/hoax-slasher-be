@@ -1,7 +1,13 @@
 import { CommonColumn } from 'src/common/column/common-column';
 import { NewsEntity } from 'src/modules/news/entities/news.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('debunking')
 export class DebunkingEntity extends CommonColumn {
@@ -9,38 +15,39 @@ export class DebunkingEntity extends CommonColumn {
   id: string;
 
   @Column({
-    name: 'evidence_description',
+    name: 'reason',
     type: 'varchar',
   })
-  evidence_description: string;
+  reason: string;
 
   @Column({
     name: 'evidence_links',
     type: 'varchar',
+    nullable: true,
   })
   evidence_links: string;
 
   @Column({
     name: 'file_path',
-    type: 'varchar'
+    type: 'varchar',
   })
   file_path: string;
-  
+
   @Column({
     name: 'file_name',
-    type: 'varchar'
+    type: 'varchar',
   })
   file_name: string;
-  
+
   @Column({
     name: 'news_id',
-    type: 'varchar'
+    type: 'varchar',
   })
   newsId: string;
-  
+
   @Column({
     name: 'user_id',
-    type: 'varchar'
+    type: 'varchar',
   })
   userId: string;
 
@@ -52,15 +59,15 @@ export class DebunkingEntity extends CommonColumn {
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'fk_news_id',
   })
-  news: NewsEntity
+  news: NewsEntity;
 
   @ManyToOne(() => UserEntity, {
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({
     name: 'user_id',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'fk_user_id'
+    foreignKeyConstraintName: 'fk_user_id',
   })
   user_id: UserEntity;
 }

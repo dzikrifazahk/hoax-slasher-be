@@ -13,6 +13,7 @@ import { CommunityModule } from './modules/community/community.module';
 import { NewsModule } from './modules/news/news.module';
 import { TrustedSourceModule } from './modules/trusted_source/trusted_source.module';
 import { EducationEventsModule } from './modules/education-events/education-events.module';
+import { DebunkingModule } from './modules/debunking/debunking.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EducationEventsModule } from './modules/education-events/education-even
     TrustedSourceModule,
     CommunityModule,
     EducationEventsModule,
+    DebunkingModule
   ],
   controllers: [AppController],
   providers: [AppService],
