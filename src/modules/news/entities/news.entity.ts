@@ -59,6 +59,13 @@ export class NewsEntity extends CommonColumn {
   news_keywords: string;
 
   @Column({
+    name: 'ambigous_keywords',
+    type: 'text',
+    nullable: true,
+  })
+  ambigous_keywords: string;
+
+  @Column({
     name: 'is_training',
     type: 'boolean',
     default: false,

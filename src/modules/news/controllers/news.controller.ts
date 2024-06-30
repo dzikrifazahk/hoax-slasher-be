@@ -73,6 +73,20 @@ export class NewsController {
     return new BaseDto('Success Get All News', getAll);
   }
 
+  @Get('/getAll')
+  @ApiOperation({
+    summary: 'Get all news',
+    description: 'Get all news',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async countDataWithLabel() {
+    const data = await this.newsService.countDataWithLabels();
+
+    return new BaseDto('Success Count Data', data);
+  }
+
   @Get('/search')
   @ApiOperation({
     summary: 'Get all news not labeled',

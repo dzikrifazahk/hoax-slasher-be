@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
@@ -59,6 +59,13 @@ export class CreateNewsDtoIn {
   newsKeywords?: string;
 
   @ApiPropertyOptional({
+    type: String,
+    example: 'Incar, Masa De, Kta',
+  })
+  @IsString()
+  ambigousKeywords?: string;
+
+  @ApiPropertyOptional({
     type: Boolean,
     example: false,
   })
@@ -116,38 +123,6 @@ export class CreateNewsDtoIn {
 
   @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
   file?: any;
-}
-
-export class UpdateNewsDtoIn {
-  @ApiProperty({
-    type: String,
-    example: 'News Title',
-  })
-  news_title: string;
-
-  @ApiProperty({
-    type: String,
-    example: 'News Description',
-  })
-  news_description: string;
-
-  @ApiProperty({
-    type: String,
-    example: 'News Author',
-  })
-  news_author: string;
-
-  @ApiProperty({
-    type: String,
-    example: 'News Source',
-  })
-  news_source: string;
-
-  @ApiProperty({
-    type: Date,
-    example: '2023-11-28 19:30:43.934129',
-  })
-  news_publish_date: Date;
 }
 
 export class SearchNewsDto {
@@ -222,6 +197,13 @@ export class UpdateUrlRequestDtoIn {
   })
   @IsString()
   newsKeywords?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Incar, Masa De, Kta',
+  })
+  @IsString()
+  ambigousKeywords?: string;
 
   @ApiPropertyOptional({
     type: Boolean,

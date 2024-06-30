@@ -41,6 +41,9 @@ export class NewsService {
           ...(dto.source && { source: dto.source }),
           ...(dto.publishDate && { publish_date: dto.publishDate }),
           ...(dto.newsKeywords && { news_keywords: dto.newsKeywords }),
+          ...(dto.ambigousKeywords && {
+            ambigous_keywords: dto.ambigousKeywords,
+          }),
           ...(dto.isTraining && { is_training: dto.isTraining }),
           ...(dto.trainingDate && { training_date: dto.trainingDate }),
           ...(dto.label && { label: dto.label }),
@@ -64,6 +67,9 @@ export class NewsService {
           ...(dto.source && { source: dto.source }),
           ...(dto.publishDate && { publish_date: dto.publishDate }),
           ...(dto.newsKeywords && { news_keywords: dto.newsKeywords }),
+          ...(dto.ambigousKeywords && {
+            ambigous_keywords: dto.ambigousKeywords,
+          }),
           ...(dto.isTraining && { is_training: dto.isTraining }),
           ...(dto.trainingDate && { training_date: dto.trainingDate }),
           ...(dto.label && { label: dto.label }),
@@ -120,6 +126,9 @@ export class NewsService {
         if (dto.newsKeywords) {
           foundNews.news_keywords = dto.newsKeywords;
         }
+        if (dto.ambigousKeywords) {
+          foundNews.ambigous_keywords = dto.ambigousKeywords;
+        }
         if (dto.isTraining) {
           foundNews.is_training = dto.isTraining;
         }
@@ -170,6 +179,9 @@ export class NewsService {
         if (dto.newsKeywords) {
           foundNews.news_keywords = dto.newsKeywords;
         }
+        if (dto.ambigousKeywords) {
+          foundNews.ambigous_keywords = dto.ambigousKeywords;
+        }
         if (dto.isTraining) {
           foundNews.is_training = dto.isTraining;
         }
@@ -205,7 +217,6 @@ export class NewsService {
 
   async updateWithUrlRequest(dto: UpdateUrlRequestDtoIn) {
     let message: string;
-    console.log('kiriman dari defa', dto);
     if (!dto.urlRequestId) {
       throw new NotFoundException('Url Request Not Found');
     } else {
@@ -236,6 +247,9 @@ export class NewsService {
       }
       if (dto.newsKeywords) {
         foundNews.news_keywords = dto.newsKeywords;
+      }
+      if (dto.ambigousKeywords) {
+        foundNews.ambigous_keywords = dto.ambigousKeywords;
       }
       if (dto.isTraining) {
         foundNews.is_training = dto.isTraining;
@@ -366,6 +380,34 @@ export class NewsService {
     }
 
     return getAll;
+  }
+
+  async countDataWithLabels() {
+    const notTrainedCount = await this.news.count({
+      where: {
+        label: Like('%NOT TRAINED%'),
+      },
+    });
+
+    const actualCount = await this.news.count({
+      where: {
+        label: Like('%actual%'),
+      },
+    });
+
+    const hoaxCount = await this.news.count({
+      where: {
+        label: Like('%hoax%'),
+      },
+    });
+
+    const response = {
+      notTrained: notTrainedCount,
+      actual: actualCount,
+      hoax: hoaxCount,
+    };
+
+    return response;
   }
 
   async delete(id: string) {
