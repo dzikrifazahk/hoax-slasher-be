@@ -9,9 +9,11 @@ import { NewsService } from './services/news.service';
 import { UrlReqController } from './controllers/url-req.controller';
 import { UrlReqService } from './services/url-req.service';
 import UrlReqEntity from './entities/url-req.entity';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     TypeOrmModule.forFeature([NewsCategoryEntity, NewsEntity, UrlReqEntity]),
   ],
   controllers: [NewsController, NewsCategoryController, UrlReqController],

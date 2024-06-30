@@ -7,12 +7,15 @@ import {
   SendUrlForAnalyzeDtoIn,
 } from '../dto/url-req.dto';
 import { NewsService } from './news.service';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 export class UrlReqService {
   constructor(
     @InjectRepository(UrlReqEntity)
     private readonly urlReqRepository: Repository<UrlReqEntity>,
     private readonly newsService: NewsService,
+    private readonly httpService: HttpService,
   ) {}
 
   async createOrUpdate(dto: CreateOrUpdateUrlReqDtoIn) {
@@ -52,27 +55,82 @@ export class UrlReqService {
   }
 
   async sendUrlForAnalyze(dto: SendUrlForAnalyzeDtoIn) {
-    const saveUrl = await this.createOrUpdate(dto);
     let message: string;
 
-    if (!saveUrl) {
-      throw new NotFoundException('Gagal menyimpan data url');
+    const findUrlFirst = await this.urlReqRepository.findOne({
+      where: {
+        url: dto.url,
+      },
+    });
+
+    console.log('ini hasilnya', findUrlFirst);
+    if (!findUrlFirst || findUrlFirst === null) {
+      const saveUrl = await this.createOrUpdate(dto);
+
+      if (!saveUrl) {
+        throw new NotFoundException('Gagal menyimpan data url');
+      } else {
+        const idUrlReq = saveUrl.data.id;
+        const url = saveUrl.data.url;
+
+        message = 'Sending Url Success Created';
+        const createDataNews = await this.newsService.createOrUpdate({
+          url: url,
+          urlRequestId: idUrlReq,
+          response: message,
+        });
+
+        const idNewsCreated = createDataNews.data.id;
+
+        const responseData = {
+          url: createDataNews.data.url,
+          urlRequestId: createDataNews.data.url_request_id,
+        };
+
+        const postUrl = `${process.env.BASE_URL_ML}/prediction/scraping`;
+        const postData = {
+          url: responseData.url,
+          id_url: responseData.urlRequestId,
+        };
+
+        // Kirim request POST dalam background
+        setTimeout(async () => {
+          try {
+            const response = await lastValueFrom(
+              this.httpService.post(postUrl, postData),
+            );
+            await this.newsService.createOrUpdate({
+              id: idNewsCreated,
+              response: String(
+                (response?.data?.status ?? '-') +
+                  ' , ' +
+                  (response?.data?.code ?? '0') +
+                  ' , ' +
+                  (response?.data?.message ?? 'message'),
+              ),
+            });
+
+            console.log('Response dari API:', response);
+          } catch (error) {
+            message = 'Error Mengirim Data Ke Machine Learning';
+            await this.newsService.createOrUpdate({
+              id: idNewsCreated,
+              response: message,
+            });
+            console.error('Error saat mengirim request POST:', error);
+          }
+        }, 0);
+
+        // Return response immediately
+        return { message: message, data: responseData };
+      }
     } else {
-      const idUrlReq = saveUrl.data.id;
-      const url = saveUrl.data.url;
+      const foundNews = await this.newsService.findOneByUrlRequestId(
+        findUrlFirst.id,
+      );
 
-      message = 'Sending Url Success Created';
-      const createDataNews = await this.newsService.createOrUpdate({
-        url: url,
-        urlRequestId: idUrlReq,
-      });
-
-      const responseData = {
-        url: createDataNews.data.url,
-        urlRequestId: createDataNews.data.url_request_id,
-      };
-
-      return { message: message, data: responseData };
+      message = 'Success Find News From Database';
+      return { message: message, data: foundNews };
     }
   }
 

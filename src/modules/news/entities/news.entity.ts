@@ -142,6 +142,13 @@ export class NewsEntity extends CommonColumn {
   })
   news_category_id: string;
 
+  @Column({
+    name: 'response',
+    type: 'varchar',
+    nullable: true,
+  })
+  response: string;
+
   @ManyToOne(() => NewsCategoryEntity, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',

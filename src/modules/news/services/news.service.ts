@@ -48,6 +48,7 @@ export class NewsService {
           ...(dto.newsCategoryId && { news_category_id: dto.newsCategoryId }),
           ...(dto.url && { url: dto.url }),
           ...(dto.urlRequestId && { url_request_id: dto.urlRequestId }),
+          ...(dto.response && { response: dto.response }),
           file_name: fileName,
           file_path: filePath,
         });
@@ -70,6 +71,7 @@ export class NewsService {
           ...(dto.newsCategoryId && { news_category_id: dto.newsCategoryId }),
           ...(dto.url && { url: dto.url }),
           ...(dto.urlRequestId && { url_request_id: dto.urlRequestId }),
+          ...(dto.response && { response: dto.response }),
         });
         await this.news.save(createdData);
         message = 'News Created Without Image';
@@ -139,6 +141,9 @@ export class NewsService {
         if (dto.urlRequestId) {
           foundNews.url_request_id = dto.urlRequestId;
         }
+        if (dto.response) {
+          foundNews.response = dto.response;
+        }
 
         foundNews.file_name = fileName;
         foundNews.file_path = filePath;
@@ -186,6 +191,9 @@ export class NewsService {
         if (dto.urlRequestId) {
           foundNews.url_request_id = dto.urlRequestId;
         }
+        if (dto.response) {
+          foundNews.response = dto.response;
+        }
 
         foundNews.updatedAt = new Date();
         await this.news.save(foundNews);
@@ -197,7 +205,7 @@ export class NewsService {
 
   async updateWithUrlRequest(dto: UpdateUrlRequestDtoIn) {
     let message: string;
-    console.log(dto);
+    console.log('kiriman dari defa', dto);
     if (!dto.urlRequestId) {
       throw new NotFoundException('Url Request Not Found');
     } else {
@@ -287,6 +295,21 @@ export class NewsService {
 
   async findByUrlRequestId(id: string) {
     const foundNews = await this.news.find({
+      where: {
+        url_request_id: id,
+      },
+      relations: ['newsCategory'],
+    });
+
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
+    }
+
+    return foundNews;
+  }
+
+  async findOneByUrlRequestId(id: string) {
+    const foundNews = await this.news.findOne({
       where: {
         url_request_id: id,
       },

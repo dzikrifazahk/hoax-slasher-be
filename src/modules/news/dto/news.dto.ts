@@ -107,6 +107,13 @@ export class CreateNewsDtoIn {
   @IsString()
   urlRequestId?: string;
 
+  @ApiPropertyOptional({
+    type: String,
+    example: 'Sending Url Success Created',
+  })
+  @IsString()
+  response?: string;
+
   @ApiPropertyOptional({ type: 'string', format: 'binary', required: false })
   file?: any;
 }

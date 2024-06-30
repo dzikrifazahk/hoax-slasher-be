@@ -36,8 +36,7 @@ export class UrlReqController {
   })
   async sendUrl(@Body() dto: SendUrlForAnalyzeDtoIn) {
     const foundUrlReq = await this.urlReeqService.sendUrlForAnalyze(dto);
-    // return new BaseDto(foundUrlReq.message, foundUrlReq.data);
-    return foundUrlReq;
+    return new BaseDto(foundUrlReq.message, foundUrlReq.data);
   }
 
   @Get('/get-by-user/:userId')
