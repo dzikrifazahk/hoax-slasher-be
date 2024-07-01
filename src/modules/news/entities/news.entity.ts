@@ -5,11 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { NewsCategoryEntity } from './news-category.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { DebunkingEntity } from 'src/modules/debunking/entities/debunking.entity';
 
 @Entity('news')
 export class NewsEntity extends CommonColumn {
@@ -167,7 +169,10 @@ export class NewsEntity extends CommonColumn {
   })
   newsCategory: NewsCategoryEntity;
 
+  @OneToMany(() => DebunkingEntity, (debunking) => debunking.news)
+  debunking: DebunkingEntity[]
+
   @OneToOne(() => UserEntity)
   @JoinColumn()
-  validated_by: UserEntity;
+  validated_by: string;
 }

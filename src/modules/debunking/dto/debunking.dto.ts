@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class CreateOrUpdateDebunkingDtoIn {
   @ApiPropertyOptional({
@@ -32,7 +33,7 @@ export class CreateOrUpdateDebunkingDtoIn {
     example: 'abbb64a1-ac91-4c8f-b48b-87d41c426041',
   })
   userId: string;
-  
+
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   file?: any;
 }
@@ -69,18 +70,32 @@ export class ResponseDebunkingDtoOut {
     example: 'abbb64a1-ac91-4c8f-b48b-87d41c426041',
   })
   userId: string;
-  
+
   @ApiProperty({
     type: String,
     example: 'filename.jpg',
   })
   file_name: string;
-  
+
   @ApiProperty({
     type: String,
     example: 'usr/local/filename.jpg',
   })
   file_path: string;
+}
+
+export class FindByIdDebunkingDtoIn {
+  @ApiPropertyOptional({
+    type: String,
+    example: 'abbb64a1-ac91-4c8f-b48b-87d41c426041',
+  })
+  @IsOptional()
+  idDebunking?: string;
   
-  
+  @ApiPropertyOptional({
+    type: String,
+    example: 'abbb64a1-ac91-4c8f-b48b-87d41c426041',
+  })
+  @IsOptional()
+  idUser?: string;
 }

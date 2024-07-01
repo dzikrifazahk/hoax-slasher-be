@@ -19,8 +19,18 @@ export class DebunkingService {
     private readonly newsRepo: Repository<NewsEntity>,
   ) {}
 
-  async createOrUpdate(dto: CreateOrUpdateDebunkingDtoIn, file?: Express.Multer.File) {
+  async createOrUpdate(
+    dto: CreateOrUpdateDebunkingDtoIn,
+    file?: Express.Multer.File,
+  ) {
     let message: string;
+
+    const foundDuplicateDebunking = this.debunkingRepo.findOne({
+      where: {
+        newsId: dto.newsId,
+        userId: dto.userId,
+      },
+    });
 
     const foundDebunking = dto.id
       ? await this.debunkingRepo.findOne({
@@ -30,7 +40,12 @@ export class DebunkingService {
         })
       : null;
 
-    if (!foundDebunking || foundDebunking === null) {
+    if (
+      !foundDebunking ||
+      foundDebunking === null ||
+      !foundDuplicateDebunking ||
+      foundDuplicateDebunking === null
+    ) {
       if (file) {
         const { originalname, buffer } = file;
         const uploadDirectory = process.env.UPLOADS_DIRECTORY;
@@ -125,19 +140,30 @@ export class DebunkingService {
     }
   }
 
-  async findOne(id: string) {
-    const foundDebunking = await this.debunkingRepo.findOne({
-      where: {
-        id: id,
-      },
-      relations: ['news'],
-    });
+  async findOne(idDebunking?: string, idUser?: string) {
+    let message: string;
+    const whereConditions: any = {};
 
-    if (!foundDebunking) {
-      throw new NotFoundException('Debunking Data Not Found');
+    if (idDebunking) {
+      whereConditions.id = idDebunking;
+      message = 'Success Get By Id Debunking';
     }
 
-    return foundDebunking;
+    if (idUser) {
+      whereConditions.userId = idUser;
+      message = 'Success Get By Id User';
+    }
+
+    const foundNews = await this.debunkingRepo.findOne({
+      where: whereConditions,
+      relations: ['news', 'user_id'],
+    });
+
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
+    }
+
+    return {message: message, data: foundNews};
   }
 
   async findAll() {
@@ -145,7 +171,7 @@ export class DebunkingService {
       order: {
         updatedAt: 'DESC',
       },
-      relations: ['news'],
+      relations: ['news', 'user_id'],
     });
     if (!foundDebunking) {
       throw new NotFoundException('Debunking Data Not Found');

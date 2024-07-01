@@ -12,14 +12,17 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Query,
 } from '@nestjs/common';
 import { DebunkingService } from './debunking.service';
 import {
   CreateOrUpdateDebunkingDtoIn,
+  FindByIdDebunkingDtoIn,
   ResponseDebunkingDtoOut,
 } from './dto/debunking.dto';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -45,6 +48,7 @@ export class DebunkingController {
     type: CreateOrUpdateDebunkingDtoIn,
   })
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   async create(
     @Body() dto: CreateOrUpdateDebunkingDtoIn,
     @UploadedFile(
@@ -69,12 +73,12 @@ export class DebunkingController {
   @ApiResponse({
     type: ResponseDebunkingDtoOut,
   })
-  async getUsers() {
-    const getUsers = await this.debunkingService.findAll();
-    return new BaseDto('Get all debunking data', getUsers);
+  async getAll() {
+    const data = await this.debunkingService.findAll();
+    return new BaseDto('Get all debunking data', data);
   }
 
-  @Get(':id')
+  @Get('/getById')
   @ApiOperation({
     summary: 'Get one debunking data',
     description: 'Get one debunking data',
@@ -82,9 +86,12 @@ export class DebunkingController {
   @ApiResponse({
     type: ResponseDebunkingDtoOut,
   })
-  async findOne(@Param('id') id: string) {
-    const getOne = this.debunkingService.findOne(id);
-    return new BaseDto('Get one debunking data', getOne);
+  async findOne(@Query() dto: FindByIdDebunkingDtoIn) {
+    const data = await this.debunkingService.findOne(
+      dto.idDebunking,
+      dto.idUser,
+    );
+    return new BaseDto(data.message, data.data);
   }
 
   @Delete(':id')

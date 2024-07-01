@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
@@ -131,14 +131,14 @@ export class SearchNewsDto {
     example: 'News Title',
     nullable: true,
   })
-  news_title?: string;
+  title?: string;
 
   @ApiPropertyOptional({
     type: String,
     example: 'News Description',
     nullable: true,
   })
-  news_description?: string;
+  description?: string;
 
   @ApiPropertyOptional({
     type: String,
@@ -239,4 +239,26 @@ export class UpdateUrlRequestDtoIn {
   })
   @IsString()
   url?: string;
+}
+
+export class ValidateNewsDtoIn {
+  @ApiPropertyOptional({
+    type: String,
+    example: 'a0b0b5f9-7c4c-4d4c-8d8c-8d8c8d8c8d8c',
+  })
+  id: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'a0b0b5f9-7c4c-4d4c-8d8c-8d8c8d8c8d8c',
+  })
+  userId: string;
+}
+
+export class FindAllNewsDtoIn {
+  @ApiPropertyOptional({
+    type: String,
+    example: 'isValidated',
+  })
+  isValidated: string;
 }

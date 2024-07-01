@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import {
   CreateNewsDtoIn,
+  FindAllNewsDtoIn,
   SearchNewsDto,
   UpdateUrlRequestDtoIn,
 } from '../dto/news.dto';
@@ -67,16 +68,16 @@ export class NewsController {
   @ApiResponse({
     type: CreateNewsDtoIn,
   })
-  async findAll() {
-    const getAll = await this.newsService.findAll();
+  async findAll(@Query() dto?: FindAllNewsDtoIn) {
+    const getAll = await this.newsService.findAll(dto.isValidated);
 
-    return new BaseDto('Success Get All News', getAll);
+    return new BaseDto(getAll.message, getAll.data);
   }
 
-  @Get('/getAll')
+  @Get('/countNewsLabel')
   @ApiOperation({
-    summary: 'Get all news',
-    description: 'Get all news',
+    summary: 'Count News Data With Label',
+    description: 'Count News Data With Label',
   })
   @ApiResponse({
     type: CreateNewsDtoIn,
@@ -97,11 +98,7 @@ export class NewsController {
   })
   async search(@Query() dto: SearchNewsDto) {
     // TODO: implement searching functionality
-    const search = await this.newsService.search(
-      dto.news_title,
-      dto.news_description,
-      dto.newsCategory,
-    );
+    const search = await this.newsService.search(dto.title, dto.description, dto.newsCategory);
 
     return new BaseDto('Success Get All News', search);
   }

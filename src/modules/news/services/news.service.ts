@@ -1,7 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { NewsEntity } from '../entities/news.entity';
-import { Like, Repository } from 'typeorm';
-import { CreateNewsDtoIn, UpdateUrlRequestDtoIn } from '../dto/news.dto';
+import { IsNull, Like, Not, Repository } from 'typeorm';
+import {
+  CreateNewsDtoIn,
+  UpdateUrlRequestDtoIn,
+  ValidateNewsDtoIn,
+} from '../dto/news.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
 const REF_IMAGE = 'news';
@@ -277,19 +281,36 @@ export class NewsService {
     }
   }
 
-  async findAll() {
-    const getAll = await this.news.find({
-      order: {
-        updatedAt: 'DESC',
-      },
-      relations: ['newsCategory'],
-    });
+  async findAll(dto: string) {
+    let message: string;
+    let getAll: any;
+
+    if (dto === 'isValidated') {
+      message = 'Get All With Validated Data';
+      getAll = await this.news.find({
+        where: {
+          validated_date: Not(IsNull()),
+        },
+        order: {
+          updatedAt: 'DESC',
+        },
+        relations: ['newsCategory', 'debunking'],
+      });
+    } else {
+      message = 'Get All Without Validated Data';
+      getAll = await this.news.find({
+        order: {
+          updatedAt: 'DESC',
+        },
+        relations: ['newsCategory', 'debunking'],
+      });
+    }
 
     if (!getAll) {
       throw new NotFoundException('News Not Found');
     }
-    console.log('ini anu', getAll);
-    return getAll;
+
+    return { message: message, data: getAll };
   }
 
   async findOne(id: string) {
@@ -408,6 +429,24 @@ export class NewsService {
     };
 
     return response;
+  }
+
+  async validateNews(dto: ValidateNewsDtoIn) {
+    const foundNews = await this.news.findOne({
+      where: {
+        id: dto.id,
+      },
+    });
+    if (!foundNews) {
+      throw new NotFoundException('News Not Found');
+    }
+
+    foundNews.validated_by = dto.userId;
+    foundNews.validated_date = new Date();
+    foundNews.updatedAt = new Date();
+
+    await this.news.save(foundNews);
+    return { message: 'Success Validate News', data: foundNews.id };
   }
 
   async delete(id: string) {
