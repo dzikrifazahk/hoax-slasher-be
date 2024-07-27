@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -19,7 +19,7 @@ export class AuthService {
   async login(email: string, password: string): Promise<DtoOutAuth> {
     const user = await this.userService.findOneByEmail(email);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
@@ -41,7 +41,7 @@ export class AuthService {
     };
 
     // return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
-    // console.log("Result : ",resultUser);a
+    // console.log("Result : ",resultUser);
     return resultUser;
   }
 }

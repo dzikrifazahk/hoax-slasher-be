@@ -99,7 +99,7 @@ export class UsersService {
       },
       // relations: ['counter'],
     });
-
+    
     if (!foundUser) {
       return null;
     }
@@ -202,7 +202,7 @@ export class UsersService {
             if (findUser) {
               findUser.updated_at = new Date();
               findUser.file_path = filePath;
-              findUser.file_name = trimmed;
+              findUser.file_name = fileName;
               await this.userRepository.save(findUser);
             }
             return {

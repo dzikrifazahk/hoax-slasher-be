@@ -70,7 +70,7 @@ export class UsersController {
   })
   async getUsers() {
     const getUsers = await this.usersService.getUsers();
-    return new BaseDto('Get all users', getUsers);
+    return new BaseDto('Success Get all users', getUsers);
   }
 
   @Get(':id')
@@ -82,8 +82,9 @@ export class UsersController {
     type: CreateUserDtoIn,
   })
   async findOne(@Param('id') id: string) {
-    const getOne = this.usersService.findOne(id);
-    return new BaseDto('Get one user', getOne);
+    const getOne = await this.usersService.findOne(id);
+    console.log(getOne)
+    return new BaseDto('Success Get one user', getOne);
   }
 
   @Put(':id')
@@ -124,6 +125,6 @@ export class UsersController {
   async remove(@Param('id') id: string) {
     await this.usersService.deleteUser(id);
 
-    return new BaseDto('Delete user', id);
+    return new BaseDto('Success Delete user', id);
   }
 }

@@ -24,6 +24,7 @@ import {
   FindAllNewsDtoIn,
   SearchNewsDto,
   UpdateUrlRequestDtoIn,
+  ValidateNewsDtoIn,
 } from '../dto/news.dto';
 import { BaseDto } from 'src/common/dtos/base.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -57,6 +58,21 @@ export class NewsController {
     file?: Express.Multer.File,
   ) {
     const data = await this.newsService.createOrUpdate(dto, file);
+    return new BaseDto(data.message, data.data);
+  }
+  
+  @Post('/validate-news')
+  @ApiOperation({
+    summary: 'Validate News',
+    description: 'Validate News',
+  })
+  @ApiResponse({
+    type: CreateNewsDtoIn,
+  })
+  async validateNews(
+    @Body() dto: ValidateNewsDtoIn
+  ) {
+    const data = await this.newsService.validateNews(dto);
     return new BaseDto(data.message, data.data);
   }
 
